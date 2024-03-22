@@ -17,20 +17,20 @@ class FirstRoute extends StatelessWidget {
         title: const Text('First Route'),
         automaticallyImplyLeading: false,
       ),
-      bottomNavigationBar: BottomAppBar(
+      bottomNavigationBar: BottomAppBar(color: const Color.fromRGBO(126, 224, 129, 1),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ElevatedButton(
+            OutlinedButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const SecondRoute()),
                 );
               },
-              child: const Text('Second'),
+              child: const Text('Second', style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
             ),
-            ElevatedButton(
+            OutlinedButton(
               onPressed: () {
                 Navigator.push(
                   context,
@@ -56,11 +56,11 @@ class SecondRoute extends StatelessWidget {
         title: const Text('Second Route'),
         automaticallyImplyLeading: false,
       ),
-      bottomNavigationBar: BottomAppBar(
+      bottomNavigationBar: BottomAppBar(color: const Color.fromRGBO(126, 224, 129, 1),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ElevatedButton(
+            OutlinedButton(
               onPressed: () {
                 Navigator.push(
                   context,
@@ -69,7 +69,7 @@ class SecondRoute extends StatelessWidget {
               },
               child: const Text('First'),
             ),
-            ElevatedButton(
+            OutlinedButton(
               onPressed: () {
                 Navigator.push(
                   context,
@@ -95,9 +95,9 @@ class ThirdRoute extends StatelessWidget {
         title: const Text('Third Route'),
         automaticallyImplyLeading: false,
       ),
-      bottomNavigationBar: BottomAppBar(
+      bottomNavigationBar: BottomAppBar(color: const Color.fromRGBO(126, 224, 129, 1),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          ElevatedButton(
+          OutlinedButton(
             onPressed: () {
               Navigator.push(
                 context,
@@ -106,7 +106,7 @@ class ThirdRoute extends StatelessWidget {
             },
             child: const Text('First!'),
           ),
-          ElevatedButton(
+          OutlinedButton(
             onPressed: () {
               Navigator.push(
                 context,
@@ -119,4 +119,16 @@ class ThirdRoute extends StatelessWidget {
       ),
     );
   }
+}
+
+class Themes extends StatelessWidget{
+  const Themes({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+
+  
 }
