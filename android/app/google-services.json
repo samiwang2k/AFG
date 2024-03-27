@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "583620562052",
+    "project_id": "aforg-dart",
+    "storage_bucket": "aforg-dart.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:583620562052:android:009c4512b4afb4d8a3c6d1",
+        "android_client_info": {
+          "package_name": "com.example.afg"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdPYDJUx5n5kUOEc4oSwTPAqvHLC9J9hc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
