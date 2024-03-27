@@ -44,38 +44,38 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCc89eQFFMRyBqY43UHcifI8okI_j9Kghk',
-    appId: '1:583620562052:web:f4a950c45cd10674a3c6d1',
-    messagingSenderId: '583620562052',
-    projectId: 'aforg-dart',
-    authDomain: 'aforg-dart.firebaseapp.com',
-    storageBucket: 'aforg-dart.appspot.com',
-    measurementId: 'G-D1GE737HZ5',
+    apiKey: 'AIzaSyDOer_GpRvu2ZOvYNUDUuF93JnjVDDgAeQ',
+    appId: '1:533992936885:web:a1b1a2592e4c9321bf35fc',
+    messagingSenderId: '533992936885',
+    projectId: 'jevents-afg',
+    authDomain: 'jevents-afg.firebaseapp.com',
+    storageBucket: 'jevents-afg.appspot.com',
+    measurementId: 'G-RQGD3NC2P7',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAdPYDJUx5n5kUOEc4oSwTPAqvHLC9J9hc',
-    appId: '1:583620562052:android:009c4512b4afb4d8a3c6d1',
-    messagingSenderId: '583620562052',
-    projectId: 'aforg-dart',
-    storageBucket: 'aforg-dart.appspot.com',
+    apiKey: 'AIzaSyDbffRp_QEKJnfMj4zal_mPvj9Hq8_3l_c',
+    appId: '1:533992936885:android:2b1e328ed228975bbf35fc',
+    messagingSenderId: '533992936885',
+    projectId: 'jevents-afg',
+    storageBucket: 'jevents-afg.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAEtsj4YZVaSTZD70pvW6MHsOHJWFWhzR4',
-    appId: '1:583620562052:ios:8fe26059eb52c23aa3c6d1',
-    messagingSenderId: '583620562052',
-    projectId: 'aforg-dart',
-    storageBucket: 'aforg-dart.appspot.com',
+    apiKey: 'AIzaSyAOQFgFNlroJsYMlp67gac0_QMCCUfyokE',
+    appId: '1:533992936885:ios:18d117bb88de5481bf35fc',
+    messagingSenderId: '533992936885',
+    projectId: 'jevents-afg',
+    storageBucket: 'jevents-afg.appspot.com',
     iosBundleId: 'com.example.afg',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAEtsj4YZVaSTZD70pvW6MHsOHJWFWhzR4',
-    appId: '1:583620562052:ios:0ceddc8991e8ddf6a3c6d1',
-    messagingSenderId: '583620562052',
-    projectId: 'aforg-dart',
-    storageBucket: 'aforg-dart.appspot.com',
+    apiKey: 'AIzaSyAOQFgFNlroJsYMlp67gac0_QMCCUfyokE',
+    appId: '1:533992936885:ios:b049fd0c5f73b077bf35fc',
+    messagingSenderId: '533992936885',
+    projectId: 'jevents-afg',
+    storageBucket: 'jevents-afg.appspot.com',
     iosBundleId: 'com.example.afg.RunnerTests',
   );
 }
