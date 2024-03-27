@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'point.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -17,7 +18,8 @@ class FirstRoute extends StatelessWidget {
         title: const Text('First Route'),
         automaticallyImplyLeading: false,
       ),
-      bottomNavigationBar: BottomAppBar(color: const Color.fromRGBO(126, 224, 129, 1),
+      bottomNavigationBar: BottomAppBar(
+        color: const Color.fromRGBO(126, 224, 129, 1),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -28,7 +30,8 @@ class FirstRoute extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const SecondRoute()),
                 );
               },
-              child: const Text('Second', style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
+              child: const Text('Second',
+                  style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
             ),
             OutlinedButton(
               onPressed: () {
@@ -56,7 +59,8 @@ class SecondRoute extends StatelessWidget {
         title: const Text('Second Route'),
         automaticallyImplyLeading: false,
       ),
-      bottomNavigationBar: BottomAppBar(color: const Color.fromRGBO(126, 224, 129, 1),
+      bottomNavigationBar: BottomAppBar(
+        color: const Color.fromRGBO(126, 224, 129, 1),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -95,7 +99,8 @@ class ThirdRoute extends StatelessWidget {
         title: const Text('Third Route'),
         automaticallyImplyLeading: false,
       ),
-      bottomNavigationBar: BottomAppBar(color: const Color.fromRGBO(126, 224, 129, 1),
+      bottomNavigationBar: BottomAppBar(
+        color: const Color.fromRGBO(126, 224, 129, 1),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           OutlinedButton(
             onPressed: () {
@@ -121,14 +126,12 @@ class ThirdRoute extends StatelessWidget {
   }
 }
 
-class Themes extends StatelessWidget{
+class Themes extends StatelessWidget {
   const Themes({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     throw UnimplementedError();
   }
-
-  
 }
