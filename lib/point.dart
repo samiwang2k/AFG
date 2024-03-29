@@ -12,4 +12,11 @@ class Point {
   static double dist(Point p) {
     return sqrt(p.x! * p.x! + p.y! * p.y!);
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'x': x,
+      'y': y,
+    };
+  }
 }

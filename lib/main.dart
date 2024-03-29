@@ -1,8 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'point.dart';
+import 'dart:developer' as developer;
+
+final firestore = FirebaseFirestore.instance;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,8 +20,27 @@ Future<void> main() async {
   ));
 }
 
-class FirstRoute extends StatelessWidget {
+Future<void> addPoint(Point point) async {
+  Map<String, dynamic> pointMap = point.toMap();
+  await firestore.collection('points').add(pointMap);
+}
+
+class FirstRoute extends StatefulWidget {
   const FirstRoute({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _FirstRouteState createState() => _FirstRouteState();
+}
+
+class _FirstRouteState extends State<FirstRoute> {
+  TextEditingController myController = TextEditingController();
+  String userInput = '';
+  void printUserInput() {
+    if (kDebugMode) {
+      print(userInput);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +48,19 @@ class FirstRoute extends StatelessWidget {
       appBar: AppBar(
         title: const Text('First Route'),
         automaticallyImplyLeading: false,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: TextField(
+          controller: myController,
+          onChanged: (value) {
+            setState(() {
+              userInput = value;
+            });
+            printUserInput();
+          },
+        ),
+        // ignore: avoid_print
       ),
       bottomNavigationBar: BottomAppBar(
         color: const Color.fromRGBO(126, 224, 129, 1),
@@ -78,7 +115,8 @@ class SecondRoute extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const FirstRoute()),
                 );
               },
-              child: const Text('First'),
+              child: const Text('Second',
+                  style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
             ),
             OutlinedButton(
               onPressed: () {
