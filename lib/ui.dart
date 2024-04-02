@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
 
   Widget buildCard(int i) => Card(
     child: listWidget(
-      Text('test'),
+      const Text('test'),
     )
   );
 
