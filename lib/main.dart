@@ -5,7 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'point.dart';
-import 'dart:developer' as developer;
 
 final firestore = FirebaseFirestore.instance;
 
@@ -25,10 +24,12 @@ Future<void> addPoint(Point point) async {
   await firestore.collection('points').add(pointMap);
 }
 
-void readPoint() async {
-  await firestore.collection("points").get().then((event) {
-    for (var doc in event.docs) {
-      print("${doc.id} => ${doc.data()}");
+Future<void> readPoint() async {
+  await firestore.collection('points').get().then((event) {
+    Map<String, dynamic> data = event.docs.last.data();
+    Point pt = Point(data['x'], data['x']);
+    if (kDebugMode) {
+      print(pt);
     }
   });
 }
@@ -91,9 +92,6 @@ class _FirstRouteState extends State<FirstRoute> {
                 );
                 printUserInput();
                 createPoint();
-                if (kDebugMode) {
-                  print(point);
-                }
                 addPoint(point!);
               },
               child: const Text('Second',
@@ -137,7 +135,7 @@ class SecondRoute extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const FirstRoute()),
                 );
               },
-              child: const Text('Second',
+              child: const Text('First',
                   style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
             ),
             OutlinedButton(
@@ -157,42 +155,78 @@ class SecondRoute extends StatelessWidget {
   }
 }
 
-class ThirdRoute extends StatelessWidget {
-  const ThirdRoute({super.key});
 
-  @override
-  Widget build(BuildContext context) {
+
+class ThirdRoute extends StatefulWidget {
+ const ThirdRoute({super.key});
+
+ @override
+ // ignore: library_private_types_in_public_api
+ _ThirdRouteState createState() => _ThirdRouteState();
+}
+
+class _ThirdRouteState extends State<ThirdRoute> {
+ final List<Container> _boxes = []; // List to store the boxes
+
+ void _addBox() {
+    setState(() {
+      _boxes.add(Container(
+        width: 200,
+        height: 100,
+        color: Colors.blue,
+        margin: const EdgeInsets.only(top: 20),
+      ));
+    });
+ }
+
+ @override
+ Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Third Route'),
         automaticallyImplyLeading: false,
       ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          ElevatedButton(
+            onPressed: _addBox,
+            child: const Text('Add Box'),
+          ),
+          ..._boxes, // Spread operator to add all boxes to the column
+        ],
+      ),
       bottomNavigationBar: BottomAppBar(
         color: const Color.fromRGBO(126, 224, 129, 1),
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          OutlinedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const FirstRoute()),
-              );
-            },
-            child: const Text('First!'),
-          ),
-          OutlinedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SecondRoute()),
-              );
-            },
-            child: const Text('Second'),
-          ),
-        ]),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            OutlinedButton(
+              onPressed: () {
+                Navigator.push(
+                 context,
+                 MaterialPageRoute(builder: (context) => const FirstRoute()),
+                );
+              },
+              child: const Text('First!'),
+            ),
+            OutlinedButton(
+              onPressed: () {
+                Navigator.push(
+                 context,
+                 MaterialPageRoute(builder: (context) => const SecondRoute()),
+                );
+              },
+              child: const Text('Second'),
+            ),
+          ],
+        ),
       ),
     );
-  }
+ }
 }
+
+
 
 class Themes extends StatelessWidget {
   const Themes({super.key});
