@@ -3,6 +3,11 @@ import 'dart:math';
 class Point {
   double? x;
   double? y;
+  
+  @override
+  String toString() {
+    return 'Point(x: $x, y: $y)';
+  }
 
   Point(this.x, this.y);
 
