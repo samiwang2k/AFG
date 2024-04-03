@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'point.dart';
 
@@ -27,7 +26,7 @@ Future<void> addPoint(Point point) async {
 Future<void> readPoint() async {
   await firestore.collection('points').get().then((event) {
     Map<String, dynamic> data = event.docs.last.data();
-    Point pt = Point(data['x'], data['x']);
+    Point pt = Point(data['x'], data['y']);
     if (kDebugMode) {
       print(pt);
     }
@@ -38,11 +37,10 @@ class FirstRoute extends StatefulWidget {
   const FirstRoute({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _FirstRouteState createState() => _FirstRouteState();
+  FirstRouteState createState() => FirstRouteState();
 }
 
-class _FirstRouteState extends State<FirstRoute> {
+class FirstRouteState extends State<FirstRoute> {
   TextEditingController myController = TextEditingController();
   String userInput = '';
   Point? point;
@@ -155,20 +153,17 @@ class SecondRoute extends StatelessWidget {
   }
 }
 
-
-
 class ThirdRoute extends StatefulWidget {
- const ThirdRoute({super.key});
+  const ThirdRoute({super.key});
 
- @override
- // ignore: library_private_types_in_public_api
- _ThirdRouteState createState() => _ThirdRouteState();
+  @override
+  ThirdRouteState createState() => ThirdRouteState();
 }
 
-class _ThirdRouteState extends State<ThirdRoute> {
- final List<Container> _boxes = []; // List to store the boxes
+class ThirdRouteState extends State<ThirdRoute> {
+  final List<Container> _boxes = []; // List to store the boxes
 
- void _addBox() {
+  void _addBox() {
     setState(() {
       _boxes.add(Container(
         width: 200,
@@ -177,10 +172,10 @@ class _ThirdRouteState extends State<ThirdRoute> {
         margin: const EdgeInsets.only(top: 20),
       ));
     });
- }
+  }
 
- @override
- Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Third Route'),
@@ -204,8 +199,8 @@ class _ThirdRouteState extends State<ThirdRoute> {
             OutlinedButton(
               onPressed: () {
                 Navigator.push(
-                 context,
-                 MaterialPageRoute(builder: (context) => const FirstRoute()),
+                  context,
+                  MaterialPageRoute(builder: (context) => const FirstRoute()),
                 );
               },
               child: const Text('First!'),
@@ -213,8 +208,8 @@ class _ThirdRouteState extends State<ThirdRoute> {
             OutlinedButton(
               onPressed: () {
                 Navigator.push(
-                 context,
-                 MaterialPageRoute(builder: (context) => const SecondRoute()),
+                  context,
+                  MaterialPageRoute(builder: (context) => const SecondRoute()),
                 );
               },
               child: const Text('Second'),
@@ -223,10 +218,8 @@ class _ThirdRouteState extends State<ThirdRoute> {
         ),
       ),
     );
- }
+  }
 }
-
-
 
 class Themes extends StatelessWidget {
   const Themes({super.key});
