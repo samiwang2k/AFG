@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -15,31 +13,25 @@ class MyApp extends StatelessWidget {
           title: const Text(appTitle),
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-            buildCard(1),
-            const SizedBox(height: 12),
-            buildCard(2),
-            const SizedBox(height: 12),
-            buildCard(3),
-            const SizedBox(height: 12),
-            buildCard(4),
-            const SizedBox(height: 12),
-          ]
-          )
-        ),
+            padding: const EdgeInsets.all(12),
+            child: Column(children: [
+              buildCard(1),
+              const SizedBox(height: 12),
+              buildCard(2),
+              const SizedBox(height: 12),
+              buildCard(3),
+              const SizedBox(height: 12),
+              buildCard(4),
+              const SizedBox(height: 12),
+            ])),
       ),
     );
   }
 
   Widget buildCard(int i) => Card(
-    child: listWidget(
-      const Text('test'),
-    )
-  );
+          child: listWidget(
+        const Text('test'),
+      ));
 
-
-
-
-  listWidget(Text text) {}}
+  listWidget(Text text) {}
+}
