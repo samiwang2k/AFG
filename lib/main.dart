@@ -267,7 +267,7 @@ class _ThirdRouteState extends State<ThirdRoute> {
   String? date;
   String? host;
   String? place;
-
+  bool _showTextFields = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -275,9 +275,17 @@ class _ThirdRouteState extends State<ThirdRoute> {
         title: const Text('Third Route'),
         automaticallyImplyLeading: false,
       ),
-      body: ElevatedButton(
-        onPressed: () {
-          // Assuming createEvent is a function that takes a String parameter
+      body: Column(children: [
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _showTextFields = true;
+            });
+          },
+          child: Text('Please!',
+              style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
+        ),
+        if (_showTextFields) // Correctly placed conditional rendering
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -336,12 +344,8 @@ class _ThirdRouteState extends State<ThirdRoute> {
                 ),
               ],
             ),
-          );
-          print(please);
-        },
-        child: Text(please!,
-            style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
-      ),
+          )
+      ]),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,

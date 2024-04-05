@@ -59,7 +59,7 @@ void nav() => runApp(MaterialApp(
     ));
 
 class FirstRoute extends StatefulWidget {
-  const FirstRoute({Key? key}) : super(key: key);
+  const FirstRoute({super.key});
 
   @override
   _FirstRouteState createState() => _FirstRouteState();
@@ -255,7 +255,7 @@ TextField(
 }
 
 class SecondRoute extends StatelessWidget {
-  const SecondRoute({Key? key}) : super(key: key);
+  const SecondRoute({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -329,7 +329,7 @@ class SecondRoute extends StatelessWidget {
 }
 
 class ThirdRoute extends StatelessWidget {
-  const ThirdRoute({Key? key}) : super(key: key);
+  const ThirdRoute({super.key});
 
   @override
   Widget build(BuildContext context) {
