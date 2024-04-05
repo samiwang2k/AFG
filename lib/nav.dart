@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, duplicate_import, avoid_print, use_super_parameters
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, duplicate_import, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -14,6 +14,7 @@ import 'event.dart';
 import 'firebase_options.dart';
 import 'point.dart';
 
+
 final firestore = FirebaseFirestore.instance;
 
 Future<void> main() async {
@@ -22,35 +23,9 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MaterialApp(
-    title: 'AFG',
+    title: 'Navigation Basics',
     home: FirstRoute(),
   ));
-}
-
-Point? createPoint(String inputted) {
-  List<String> coordinates = inputted.split(',');
-  if (coordinates.length == 2) {
-    double x = double.tryParse(coordinates[0]) ?? 0.0;
-    double y = double.tryParse(coordinates[1]) ?? 0.0;
-    Point rval = Point.defined(x, y);
-    return rval;
-  }
-  return null;
-}
-
-String createEvent(String textyInput) {
-  List<String> jevents = textyInput.split('#');
-  Event event = Event(
-    name: jevents[0],
-    date: jevents[1],
-    location: createPoint(
-        jevents[2]), // Assuming createPoint can handle a default value
-    hostName: jevents.last,
-  );
-  if (kDebugMode) {
-    print(event);
-  }
-  return event.toString();
 }
 
 Future<void> addPoint(Point point) async {
@@ -72,7 +47,6 @@ Future<void> readPoint() async {
     }
   });
 }
-
 void nav() => runApp(MaterialApp(
       builder: (context, child) {
         return Directionality(textDirection: TextDirection.ltr, child: child!);
@@ -92,7 +66,50 @@ class FirstRoute extends StatefulWidget {
 }
 
 class _FirstRouteState extends State<FirstRoute> {
-  String? please = 'press to work(please)';
+  TextEditingController mc1 = TextEditingController();
+  TextEditingController mc2 = TextEditingController();
+  TextEditingController mc3 = TextEditingController();
+  TextEditingController mc4 = TextEditingController();
+
+
+  String userInput = '';
+  Point? point;
+  void printUserInput() {
+    if (kDebugMode) {
+      print(userInput);
+    }
+  }
+
+  Point? createPoint(String inputted) {
+    List<String> coordinates = inputted.split(',');
+    if (coordinates.length == 2) {
+      double x = double.tryParse(coordinates[0]) ?? 0.0;
+      double y = double.tryParse(coordinates[1]) ?? 0.0;
+      Point rval = Point.defined(x, y);
+      return rval;
+    }
+    return null;
+  }
+  String? name;
+  String? date;
+  String? host;
+  String? place;
+
+  String createEvent(String textyInput) {
+    List<String> jevents = textyInput.split('#');
+    Event event = Event(
+      name: jevents[0],
+      date: jevents[1],
+      location: createPoint(
+          jevents[2]), // Assuming createPoint can handle a default value
+      hostName: jevents.last,
+    );
+    if (kDebugMode) {
+      print(event);
+    }
+    return event.toString();
+  }
+  String? please= 'press to work(please)';
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +117,77 @@ class _FirstRouteState extends State<FirstRoute> {
       appBar: AppBar(
         title: const Text('First Route'),
         automaticallyImplyLeading: false,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+ controller: mc1,
+ textInputAction: TextInputAction.next,
+ onEditingComplete: () => FocusScope.of(context).nextFocus(),
+ onChanged: (val1) {
+    setState(() {
+      name = val1;
+    });
+ },
+ decoration: InputDecoration(
+    hintText: 'Enter your name', // Hint for the name field
+ ),
+),
+TextField(
+ controller: mc2,
+ textInputAction: TextInputAction.next,
+ onEditingComplete: () => FocusScope.of(context).nextFocus(),
+ onChanged: (val2) {
+    setState(() {
+      date = val2;
+    });
+ },
+ decoration: InputDecoration(
+    hintText: 'Enter the date', // Hint for the date field
+ ),
+),
+TextField(
+ controller: mc3,
+ textInputAction: TextInputAction.next,
+ onEditingComplete: () => FocusScope.of(context).nextFocus(),
+ onChanged: (val3) {
+    setState(() {
+      place = val3;
+    });
+ },
+ decoration: InputDecoration(
+    hintText: 'Enter the place', // Hint for the place field
+ ),
+),
+TextField(
+ controller: mc4,
+ textInputAction: TextInputAction.done,
+ onEditingComplete: () => FocusScope.of(context).unfocus(),
+ onChanged: (val4) {
+    setState(() {
+      host = val4;
+    });
+ },
+ decoration: InputDecoration(
+    hintText: 'Enter the host', // Hint for the host field
+ ),
+), ElevatedButton(
+ onPressed: () {
+    // Assuming createEvent is a function that takes a String parameter
+    setState(() {
+          please = createEvent('$name#$date#$place#$host');
+        });
+        print(please);
+    
+ },
+ child: Text(please!,
+    style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
+)
+
+          ],
+        ),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -146,7 +234,7 @@ class _FirstRouteState extends State<FirstRoute> {
                       context,
                       MaterialPageRoute(builder: (context) => SecondRoute()),
                     );
-
+                    
                     break;
                   case 2:
                     Navigator.push(
@@ -240,33 +328,8 @@ class SecondRoute extends StatelessWidget {
   }
 }
 
-class ThirdRoute extends StatefulWidget {
+class ThirdRoute extends StatelessWidget {
   const ThirdRoute({Key? key}) : super(key: key);
-
-  @override
-  _ThirdRouteState createState() => _ThirdRouteState();
-}
-
-class _ThirdRouteState extends State<ThirdRoute> {
-  String? please = 'hi';
-  TextEditingController mc1 = TextEditingController();
-  TextEditingController mc2 = TextEditingController();
-  TextEditingController mc3 = TextEditingController();
-  TextEditingController mc4 = TextEditingController();
-
-  String userInput = '';
-  Point? point;
-
-  void printUserInput() {
-    if (kDebugMode) {
-      print(userInput);
-    }
-  }
-
-  String? name;
-  String? date;
-  String? host;
-  String? place;
 
   @override
   Widget build(BuildContext context) {
@@ -274,73 +337,6 @@ class _ThirdRouteState extends State<ThirdRoute> {
       appBar: AppBar(
         title: const Text('Third Route'),
         automaticallyImplyLeading: false,
-      ),
-      body: ElevatedButton(
-        onPressed: () {
-          // Assuming createEvent is a function that takes a String parameter
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                TextField(
-                  controller: mc1,
-                  textInputAction: TextInputAction.next,
-                  onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                  onChanged: (val1) {
-                    setState(() {
-                      name = val1;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Enter your name', // Hint for the name field
-                  ),
-                ),
-                TextField(
-                  controller: mc2,
-                  textInputAction: TextInputAction.next,
-                  onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                  onChanged: (val2) {
-                    setState(() {
-                      date = val2;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Enter the date', // Hint for the date field
-                  ),
-                ),
-                TextField(
-                  controller: mc3,
-                  textInputAction: TextInputAction.next,
-                  onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                  onChanged: (val3) {
-                    setState(() {
-                      place = val3;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Enter the place', // Hint for the place field
-                  ),
-                ),
-                TextField(
-                  controller: mc4,
-                  textInputAction: TextInputAction.done,
-                  onEditingComplete: () => FocusScope.of(context).unfocus(),
-                  onChanged: (val4) {
-                    setState(() {
-                      host = val4;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Enter the host', // Hint for the host field
-                  ),
-                ),
-              ],
-            ),
-          );
-          print(please);
-        },
-        child: Text(please!,
-            style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(

@@ -6,7 +6,7 @@ class Point {
 
   @override
   String toString() {
-    return 'Point(x: $x, y: $y)';
+    return '$x,$y';
   }
 
   Point({double? xCoordinate, double? yCoordinate}) {
