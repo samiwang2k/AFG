@@ -1,6 +1,5 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, duplicate_import, avoid_print, use_super_parameters
+// ignore_for_file: library_private_types_in_public_api
 
-import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
 
@@ -10,9 +9,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'event.dart';
+//import 'event.dart';
 import 'firebase_options.dart';
-import 'point.dart';
+//import 'point.dart';
 
 final firestore = FirebaseFirestore.instance;
 
@@ -81,11 +80,11 @@ void nav() => runApp(MaterialApp(
       theme: ThemeData(
         primaryColor: Colors.grey[800],
       ),
-      home: FirstRoute(),
+      home: const FirstRoute(),
     ));
 
 class FirstRoute extends StatefulWidget {
-  const FirstRoute({Key? key}) : super(key: key);
+  const FirstRoute({super.key});
 
   @override
   _FirstRouteState createState() => _FirstRouteState();
@@ -120,11 +119,11 @@ class _FirstRouteState extends State<FirstRoute> {
               gap: 8,
               activeColor: Colors.black,
               iconSize: 24,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              duration: Duration(milliseconds: 400),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              duration: const Duration(milliseconds: 400),
               tabBackgroundColor: Colors.grey[100]!,
               color: Colors.black,
-              tabs: [
+              tabs: const [
                 GButton(
                   icon: LineIcons.home,
                   text: 'Home',
@@ -144,14 +143,14 @@ class _FirstRouteState extends State<FirstRoute> {
                   case 1:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SecondRoute()),
+                      MaterialPageRoute(builder: (context) => const SecondRoute()),
                     );
 
                     break;
                   case 2:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ThirdRoute()),
+                      MaterialPageRoute(builder: (context) => const ThirdRoute()),
                     );
                     break;
                   default:
@@ -167,7 +166,7 @@ class _FirstRouteState extends State<FirstRoute> {
 }
 
 class SecondRoute extends StatelessWidget {
-  const SecondRoute({Key? key}) : super(key: key);
+  const SecondRoute({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -195,11 +194,11 @@ class SecondRoute extends StatelessWidget {
               gap: 8,
               activeColor: Colors.black,
               iconSize: 24,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              duration: Duration(milliseconds: 400),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              duration: const Duration(milliseconds: 400),
               tabBackgroundColor: Colors.grey[100]!,
               color: Colors.black,
-              tabs: [
+              tabs: const [
                 GButton(
                   icon: LineIcons.home,
                   text: 'Home',
@@ -219,13 +218,13 @@ class SecondRoute extends StatelessWidget {
                   case 0:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => FirstRoute()),
+                      MaterialPageRoute(builder: (context) => const FirstRoute()),
                     );
                     break;
                   case 2:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ThirdRoute()),
+                      MaterialPageRoute(builder: (context) => const ThirdRoute()),
                     );
                     break;
                   default:
@@ -241,7 +240,7 @@ class SecondRoute extends StatelessWidget {
 }
 
 class ThirdRoute extends StatefulWidget {
-  const ThirdRoute({Key? key}) : super(key: key);
+  const ThirdRoute({super.key});
 
   @override
   _ThirdRouteState createState() => _ThirdRouteState();
@@ -282,7 +281,7 @@ class _ThirdRouteState extends State<ThirdRoute> {
               _showTextFields = true;
             });
           },
-          child: Text('Please!',
+          child: const Text('Please!',
               style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
         ),
         if (_showTextFields) // Correctly placed conditional rendering
@@ -299,7 +298,7 @@ class _ThirdRouteState extends State<ThirdRoute> {
                       name = val1;
                     });
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter your name', // Hint for the name field
                   ),
                 ),
@@ -312,7 +311,7 @@ class _ThirdRouteState extends State<ThirdRoute> {
                       date = val2;
                     });
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter the date', // Hint for the date field
                   ),
                 ),
@@ -325,7 +324,7 @@ class _ThirdRouteState extends State<ThirdRoute> {
                       place = val3;
                     });
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter the place', // Hint for the place field
                   ),
                 ),
@@ -338,7 +337,7 @@ class _ThirdRouteState extends State<ThirdRoute> {
                       host = val4;
                     });
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter the host', // Hint for the host field
                   ),
                 ),
@@ -365,11 +364,11 @@ class _ThirdRouteState extends State<ThirdRoute> {
               gap: 8,
               activeColor: Colors.black,
               iconSize: 24,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              duration: Duration(milliseconds: 400),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              duration: const Duration(milliseconds: 400),
               tabBackgroundColor: Colors.grey[100]!,
               color: Colors.black,
-              tabs: [
+              tabs: const [
                 GButton(
                   icon: LineIcons.home,
                   text: 'Home',
@@ -389,13 +388,13 @@ class _ThirdRouteState extends State<ThirdRoute> {
                   case 0:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => FirstRoute()),
+                      MaterialPageRoute(builder: (context) => const FirstRoute()),
                     );
                     break;
                   case 1:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SecondRoute()),
+                      MaterialPageRoute(builder: (context) => const SecondRoute()),
                     );
                     break;
                   default:

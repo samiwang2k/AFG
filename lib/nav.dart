@@ -1,6 +1,3 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, duplicate_import, avoid_print
-
-import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
 
@@ -10,9 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'event.dart';
+//import 'event.dart';
 import 'firebase_options.dart';
-import 'point.dart';
+//import 'point.dart';
 
 
 final firestore = FirebaseFirestore.instance;
@@ -55,13 +52,14 @@ void nav() => runApp(MaterialApp(
       theme: ThemeData(
         primaryColor: Colors.grey[800],
       ),
-      home: FirstRoute(),
+      home: const FirstRoute(),
     ));
 
 class FirstRoute extends StatefulWidget {
   const FirstRoute({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _FirstRouteState createState() => _FirstRouteState();
 }
 
@@ -131,7 +129,7 @@ class _FirstRouteState extends State<FirstRoute> {
       name = val1;
     });
  },
- decoration: InputDecoration(
+ decoration: const InputDecoration(
     hintText: 'Enter your name', // Hint for the name field
  ),
 ),
@@ -144,7 +142,7 @@ TextField(
       date = val2;
     });
  },
- decoration: InputDecoration(
+ decoration: const InputDecoration(
     hintText: 'Enter the date', // Hint for the date field
  ),
 ),
@@ -157,7 +155,7 @@ TextField(
       place = val3;
     });
  },
- decoration: InputDecoration(
+ decoration: const InputDecoration(
     hintText: 'Enter the place', // Hint for the place field
  ),
 ),
@@ -170,7 +168,7 @@ TextField(
       host = val4;
     });
  },
- decoration: InputDecoration(
+ decoration: const InputDecoration(
     hintText: 'Enter the host', // Hint for the host field
  ),
 ), ElevatedButton(
@@ -179,11 +177,13 @@ TextField(
     setState(() {
           please = createEvent('$name#$date#$place#$host');
         });
-        print(please);
+        if (kDebugMode) {
+          print(please);
+        }
     
  },
  child: Text(please!,
-    style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
+    style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
 )
 
           ],
@@ -208,11 +208,11 @@ TextField(
               gap: 8,
               activeColor: Colors.black,
               iconSize: 24,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              duration: Duration(milliseconds: 400),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              duration: const Duration(milliseconds: 400),
               tabBackgroundColor: Colors.grey[100]!,
               color: Colors.black,
-              tabs: [
+              tabs: const [
                 GButton(
                   icon: LineIcons.home,
                   text: 'Home',
@@ -232,14 +232,14 @@ TextField(
                   case 1:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SecondRoute()),
+                      MaterialPageRoute(builder: (context) => const SecondRoute()),
                     );
                     
                     break;
                   case 2:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ThirdRoute()),
+                      MaterialPageRoute(builder: (context) => const ThirdRoute()),
                     );
                     break;
                   default:
@@ -283,11 +283,11 @@ class SecondRoute extends StatelessWidget {
               gap: 8,
               activeColor: Colors.black,
               iconSize: 24,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              duration: Duration(milliseconds: 400),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              duration: const Duration(milliseconds: 400),
               tabBackgroundColor: Colors.grey[100]!,
               color: Colors.black,
-              tabs: [
+              tabs: const [
                 GButton(
                   icon: LineIcons.home,
                   text: 'Home',
@@ -307,13 +307,13 @@ class SecondRoute extends StatelessWidget {
                   case 0:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => FirstRoute()),
+                      MaterialPageRoute(builder: (context) => const FirstRoute()),
                     );
                     break;
                   case 2:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ThirdRoute()),
+                      MaterialPageRoute(builder: (context) => const ThirdRoute()),
                     );
                     break;
                   default:
@@ -357,11 +357,11 @@ class ThirdRoute extends StatelessWidget {
               gap: 8,
               activeColor: Colors.black,
               iconSize: 24,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              duration: Duration(milliseconds: 400),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              duration: const Duration(milliseconds: 400),
               tabBackgroundColor: Colors.grey[100]!,
               color: Colors.black,
-              tabs: [
+              tabs: const [
                 GButton(
                   icon: LineIcons.home,
                   text: 'Home',
@@ -381,13 +381,13 @@ class ThirdRoute extends StatelessWidget {
                   case 0:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => FirstRoute()),
+                      MaterialPageRoute(builder: (context) => const FirstRoute()),
                     );
                     break;
                   case 1:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SecondRoute()),
+                      MaterialPageRoute(builder: (context) => const SecondRoute()),
                     );
                     break;
                   default:
