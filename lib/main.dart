@@ -12,19 +12,48 @@ import 'package:firebase_core/firebase_core.dart';
 //import 'event.dart';
 import 'firebase_options.dart';
 //import 'point.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 final firestore = FirebaseFirestore.instance;
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(const MaterialApp(
-    title: 'AFG',
-    home: FirstRoute(),
-  ));
+
+Future<String?> signInWithEmailPassword(String email, String password) async {
+ try {
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    // The user is signed in, return the user ID
+    return userCredential.user?.uid;
+ } on FirebaseAuthException catch (e) {
+    // Handle sign-in errors
+    print(e.message);
+    return null;
+ }
 }
+
+Future<void> main() async {
+ WidgetsFlutterBinding.ensureInitialized();
+ await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+ );
+
+ // Check if the user is already signed in
+ final user = FirebaseAuth.instance.currentUser;
+ if (user != null) {
+    // User is already signed in, navigate to the main content
+    runApp(const MaterialApp(
+      title: 'AFG',
+      home: FirstRoute(),
+    ));
+ } else {
+    // User is not signed in, show the SignInForm
+    runApp(MaterialApp(
+      title: 'AFG',
+      home: SignInForm(),
+    ));
+ }
+}
+
 
 Point? createPoint(String inputted) {
   List<String> coordinates = inputted.split(',');
@@ -407,4 +436,169 @@ class _ThirdRouteState extends State<ThirdRoute> {
       ),
     );
   }
+}
+class SignInForm extends StatefulWidget {
+ @override
+ _SignInFormState createState() => _SignInFormState();
+}
+
+
+
+class _SignInFormState extends State<SignInForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Material( // Add Material widget here
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your email';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: 'Password'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your password';
+                }
+                return null;
+              },
+              obscureText: true,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  _signIn();
+                }
+              },
+              child: const Text('Sign In'),
+            ), ElevatedButton(
+ onPressed: () {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => SignUpForm()),
+    );
+ },
+ child: const Text('Sign Up'),
+),
+
+          ],
+        ),
+      ),
+    );
+  }
+
+void _signIn() async {
+ String? userId = await signInWithEmailPassword(
+    _emailController.text,
+    _passwordController.text,
+ );
+ if (userId != null) {
+    // Sign-in successful, navigate to the main content
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const FirstRoute()),
+    );
+ } else {
+    // Sign-in failed, show an error message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Sign-in failed')),
+    );
+ }
+}
+
+}
+Future<String?> signUpWithEmailPassword(String email, String password) async {
+ try {
+    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    // The user is signed up, return the user ID
+    return userCredential.user?.uid;
+ } on FirebaseAuthException catch (e) {
+    // Handle sign-up errors
+    print(e.message);
+    return null;
+ }
+}
+class SignUpForm extends StatefulWidget {
+ @override
+ _SignUpFormState createState() => _SignUpFormState();
+}
+
+class _SignUpFormState extends State<SignUpForm> {
+ final _formKey = GlobalKey<FormState>();
+ final _emailController = TextEditingController();
+ final _passwordController = TextEditingController();
+
+ @override
+ Widget build(BuildContext context) {
+    return Material(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                 return 'Please enter your email';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: 'Password'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                 return 'Please enter your password';
+                }
+                return null;
+              },
+              obscureText: true,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                 _signUp();
+                }
+              },
+              child: const Text('Sign Up'),
+            ),
+          ],
+        ),
+      ),
+    );
+ }
+
+ void _signUp() async {
+    String? userId = await signUpWithEmailPassword(
+      _emailController.text,
+      _passwordController.text,
+    );
+    if (userId != null) {
+      // Sign-up successful, navigate to the main content
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const FirstRoute()),
+      );
+    } else {
+      // Sign-up failed, show an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign-up failed')),
+      );
+    }
+ }
 }
