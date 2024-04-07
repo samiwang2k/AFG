@@ -15,7 +15,14 @@ import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 final firestore = FirebaseFirestore.instance;
 
-
+Future<void> signOut() async {
+ try {
+    await FirebaseAuth.instance.signOut();
+    print("User signed out");
+ } catch (e) {
+    print(e.toString());
+ }
+}
 Future<String?> signInWithEmailPassword(String email, String password) async {
  try {
     UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -87,9 +94,26 @@ Future<void> addPoint(Point point) async {
 }
 
 Future<void> addEvent(Event event) async {
-  Map<String, dynamic> eventMap = event.toMap();
-  await firestore.collection('events').add(eventMap);
+ String userId = FirebaseAuth.instance.currentUser!.uid;
+ DocumentReference userDocRef = firestore.collection('users').doc(userId);
+
+ // Fetch the user's document
+ DocumentSnapshot userDocSnapshot = await userDocRef.get();
+
+ // Check if the user's document exists and has an events array
+if (userDocSnapshot.exists && (userDocSnapshot.data() as Map<String, dynamic>).containsKey('events')) {
+    // If the events array exists, append the new event
+    await userDocRef.update({
+      'events': FieldValue.arrayUnion([event.toMap()]),
+    });
+ } else {
+    // If the events array does not exist, create it with the new event
+    await userDocRef.set({
+      'events': [event.toMap()],
+    }, SetOptions(merge: true)); // Use merge to avoid overwriting other fields
+ }
 }
+
 
 Future<void> readPoint() async {
   await firestore.collection('points').get().then((event) {
@@ -290,6 +314,7 @@ class _ThirdRouteState extends State<ThirdRoute> {
       print(userInput);
     }
   }
+  Event? newEvent;
 
   String? name;
   String? date;
@@ -312,7 +337,16 @@ class _ThirdRouteState extends State<ThirdRoute> {
           },
           child: const Text('Please!',
               style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
-        ),
+        ),ElevatedButton(
+ onPressed: () async {
+    await signOut(); // Call the sign-out function
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => SignInForm()), // Navigate to the Sign-In page
+    );
+ },
+ child: const Text('Sign Out'),
+),
+
         if (_showTextFields) // Correctly placed conditional rendering
           Padding(
             padding: const EdgeInsets.all(16),
@@ -369,7 +403,24 @@ class _ThirdRouteState extends State<ThirdRoute> {
                   decoration: const InputDecoration(
                     hintText: 'Enter the host', // Hint for the host field
                   ),
-                ),
+                ), ElevatedButton(
+ onPressed: () {
+    newEvent = Event(
+      name: name,
+      date: date,
+      location: createPoint(place!), // Assuming createPoint is a function that converts 'place' to a Point object
+      hostName: host,
+    );
+    _showTextFields=false;
+    print(newEvent);
+    String userId = FirebaseAuth.instance.currentUser!.uid; // Get the user ID
+ print('User ID: $userId'); // Print the user ID
+ addEvent(newEvent!);
+    
+ },
+ child: const Text('confirm'),
+)
+
               ],
             ),
           )
