@@ -1,5 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
-
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
 
@@ -7,60 +9,67 @@ import 'event.dart';
 import 'point.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 //import 'event.dart';
 import 'firebase_options.dart';
 //import 'point.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 final firestore = FirebaseFirestore.instance;
 
 Future<void> signOut() async {
- try {
+  try {
     await FirebaseAuth.instance.signOut();
-    print("User signed out");
- } catch (e) {
-    print(e.toString());
- }
+    if (kDebugMode) {
+      print("User signed out");
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print(e.toString());
+    }
+  }
 }
+
 Future<String?> signInWithEmailPassword(String email, String password) async {
- try {
-    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+  try {
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
     // The user is signed in, return the user ID
     return userCredential.user?.uid;
- } on FirebaseAuthException catch (e) {
+  } on FirebaseAuthException catch (e) {
     // Handle sign-in errors
-    print(e.message);
+    if (kDebugMode) {
+      print(e.message);
+    }
     return null;
- }
+  }
 }
 
 Future<void> main() async {
- WidgetsFlutterBinding.ensureInitialized();
- await Firebase.initializeApp(
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
- );
+  );
 
- // Check if the user is already signed in
- final user = FirebaseAuth.instance.currentUser;
- if (user != null) {
+  // Check if the user is already signed in
+  final user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
     // User is already signed in, navigate to the main content
     runApp(const MaterialApp(
       title: 'AFG',
       home: FirstRoute(),
     ));
- } else {
+  } else {
     // User is not signed in, show the SignInForm
-    runApp(MaterialApp(
+    runApp(const MaterialApp(
       title: 'AFG',
       home: SignInForm(),
     ));
- }
+  }
 }
-
 
 Point? createPoint(String inputted) {
   List<String> coordinates = inputted.split(',');
@@ -94,26 +103,26 @@ Future<void> addPoint(Point point) async {
 }
 
 Future<void> addEvent(Event event) async {
- String userId = FirebaseAuth.instance.currentUser!.uid;
- DocumentReference userDocRef = firestore.collection('users').doc(userId);
+  String userId = FirebaseAuth.instance.currentUser!.uid;
+  DocumentReference userDocRef = firestore.collection('users').doc(userId);
 
- // Fetch the user's document
- DocumentSnapshot userDocSnapshot = await userDocRef.get();
+  // Fetch the user's document
+  DocumentSnapshot userDocSnapshot = await userDocRef.get();
 
- // Check if the user's document exists and has an events array
-if (userDocSnapshot.exists && (userDocSnapshot.data() as Map<String, dynamic>).containsKey('events')) {
+  // Check if the user's document exists and has an events array
+  if (userDocSnapshot.exists &&
+      (userDocSnapshot.data() as Map<String, dynamic>).containsKey('events')) {
     // If the events array exists, append the new event
     await userDocRef.update({
       'events': FieldValue.arrayUnion([event.toMap()]),
     });
- } else {
+  } else {
     // If the events array does not exist, create it with the new event
     await userDocRef.set({
       'events': [event.toMap()],
     }, SetOptions(merge: true)); // Use merge to avoid overwriting other fields
- }
+  }
 }
-
 
 Future<void> readPoint() async {
   await firestore.collection('points').get().then((event) {
@@ -196,14 +205,16 @@ class _FirstRouteState extends State<FirstRoute> {
                   case 1:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const SecondRoute()),
+                      MaterialPageRoute(
+                          builder: (context) => const SecondRoute()),
                     );
 
                     break;
                   case 2:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ThirdRoute()),
+                      MaterialPageRoute(
+                          builder: (context) => const ThirdRoute()),
                     );
                     break;
                   default:
@@ -238,6 +249,7 @@ class SecondRoute extends StatelessWidget {
             )
           ],
         ),
+        
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
@@ -271,13 +283,15 @@ class SecondRoute extends StatelessWidget {
                   case 0:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const FirstRoute()),
+                      MaterialPageRoute(
+                          builder: (context) => const FirstRoute()),
                     );
                     break;
                   case 2:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ThirdRoute()),
+                      MaterialPageRoute(
+                          builder: (context) => const ThirdRoute()),
                     );
                     break;
                   default:
@@ -314,6 +328,7 @@ class _ThirdRouteState extends State<ThirdRoute> {
       print(userInput);
     }
   }
+
   Event? newEvent;
 
   String? name;
@@ -321,6 +336,7 @@ class _ThirdRouteState extends State<ThirdRoute> {
   String? host;
   String? place;
   bool _showTextFields = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -337,16 +353,19 @@ class _ThirdRouteState extends State<ThirdRoute> {
           },
           child: const Text('Please!',
               style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
-        ),ElevatedButton(
- onPressed: () async {
-    await signOut(); // Call the sign-out function
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => SignInForm()), // Navigate to the Sign-In page
-    );
- },
- child: const Text('Sign Out'),
-),
-
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            await signOut();
+            // Call the sign-out function
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                  builder: (context) =>
+                      const SignInForm()), // Navigate to the Sign-In page
+            );
+          },
+          child: const Text('Sign Out'),
+        ),
         if (_showTextFields) // Correctly placed conditional rendering
           Padding(
             padding: const EdgeInsets.all(16),
@@ -403,24 +422,45 @@ class _ThirdRouteState extends State<ThirdRoute> {
                   decoration: const InputDecoration(
                     hintText: 'Enter the host', // Hint for the host field
                   ),
-                ), ElevatedButton(
- onPressed: () {
-    newEvent = Event(
-      name: name,
-      date: date,
-      location: createPoint(place!), // Assuming createPoint is a function that converts 'place' to a Point object
-      hostName: host,
-    );
-    _showTextFields=false;
-    print(newEvent);
-    String userId = FirebaseAuth.instance.currentUser!.uid; // Get the user ID
- print('User ID: $userId'); // Print the user ID
- addEvent(newEvent!);
-    
- },
- child: const Text('confirm'),
-)
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // Regular expression to match the date format "mm/dd/yyyy"
+                    final RegExp dateFormat = RegExp(
+                        r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
 
+                    // Check if the date matches the format
+                    if (dateFormat.hasMatch(date!)) {
+                      newEvent = Event(
+                        name: name,
+                        date: date,
+                        location: createPoint(
+                            place!), // Assuming createPoint is a function that converts 'place' to a Point object
+                        hostName: host,
+                      );
+                      _showTextFields = false;
+                      if (kDebugMode) {
+                        print(newEvent);
+                      }
+                      String userId = FirebaseAuth
+                          .instance.currentUser!.uid; // Get the user ID
+                      if (kDebugMode) {
+                        print('User ID: $userId');
+                      } // Print the user ID
+                      addEvent(newEvent!);
+                      
+                    } else {
+                      // Show an error message or handle the invalid date format
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text(
+                                'Please enter a valid date in the format mm/dd/yyyy')),
+                      );
+                    }
+                    MaterialPageRoute(builder: (context) => const MapScreen());
+                  },
+                  child: const Text('confirm'),
+                )
               ],
             ),
           )
@@ -468,13 +508,15 @@ class _ThirdRouteState extends State<ThirdRoute> {
                   case 0:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const FirstRoute()),
+                      MaterialPageRoute(
+                          builder: (context) => const FirstRoute()),
                     );
                     break;
                   case 1:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const SecondRoute()),
+                      MaterialPageRoute(
+                          builder: (context) => const SecondRoute()),
                     );
                     break;
                   default:
@@ -488,12 +530,13 @@ class _ThirdRouteState extends State<ThirdRoute> {
     );
   }
 }
+
 class SignInForm extends StatefulWidget {
- @override
- _SignInFormState createState() => _SignInFormState();
+  const SignInForm({super.key});
+
+  @override
+  _SignInFormState createState() => _SignInFormState();
 }
-
-
 
 class _SignInFormState extends State<SignInForm> {
   final _formKey = GlobalKey<FormState>();
@@ -502,7 +545,8 @@ class _SignInFormState extends State<SignInForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Material( // Add Material widget here
+    return Material(
+      // Add Material widget here
       child: Form(
         key: _formKey,
         child: Column(
@@ -535,66 +579,76 @@ class _SignInFormState extends State<SignInForm> {
                 }
               },
               child: const Text('Sign In'),
-            ), ElevatedButton(
- onPressed: () {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => SignUpForm()),
-    );
- },
- child: const Text('Sign Up'),
-),
-
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const SignUpForm()),
+                );
+              },
+              child: const Text('Sign Up'),
+            ),
           ],
         ),
       ),
     );
   }
 
-void _signIn() async {
- String? userId = await signInWithEmailPassword(
-    _emailController.text,
-    _passwordController.text,
- );
- if (userId != null) {
-    // Sign-in successful, navigate to the main content
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const FirstRoute()),
+  void _signIn() async {
+    String? userId = await signInWithEmailPassword(
+      _emailController.text,
+      _passwordController.text,
     );
- } else {
-    // Sign-in failed, show an error message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Sign-in failed')),
-    );
- }
+    if (userId != null) {
+      if (mounted) {
+        // Sign-in successful, navigate to the main content
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const FirstRoute()),
+        );
+      }
+    } else {
+      if (mounted) {
+        // Sign-in failed, show an error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Sign-in failed')),
+        );
+      }
+    }
+  }
 }
 
-}
 Future<String?> signUpWithEmailPassword(String email, String password) async {
- try {
-    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+  try {
+    UserCredential userCredential =
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
     // The user is signed up, return the user ID
     return userCredential.user?.uid;
- } on FirebaseAuthException catch (e) {
+  } on FirebaseAuthException catch (e) {
     // Handle sign-up errors
-    print(e.message);
+    if (kDebugMode) {
+      print(e.message);
+    }
     return null;
- }
+  }
 }
+
 class SignUpForm extends StatefulWidget {
- @override
- _SignUpFormState createState() => _SignUpFormState();
+  const SignUpForm({super.key});
+
+  @override
+  _SignUpFormState createState() => _SignUpFormState();
 }
 
 class _SignUpFormState extends State<SignUpForm> {
- final _formKey = GlobalKey<FormState>();
- final _emailController = TextEditingController();
- final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
- @override
- Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return Material(
       child: Form(
         key: _formKey,
@@ -605,7 +659,7 @@ class _SignUpFormState extends State<SignUpForm> {
               decoration: const InputDecoration(labelText: 'Email'),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                 return 'Please enter your email';
+                  return 'Please enter your email';
                 }
                 return null;
               },
@@ -615,7 +669,7 @@ class _SignUpFormState extends State<SignUpForm> {
               decoration: const InputDecoration(labelText: 'Password'),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                 return 'Please enter your password';
+                  return 'Please enter your password';
                 }
                 return null;
               },
@@ -624,7 +678,7 @@ class _SignUpFormState extends State<SignUpForm> {
             ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
-                 _signUp();
+                  _signUp();
                 }
               },
               child: const Text('Sign Up'),
@@ -633,23 +687,85 @@ class _SignUpFormState extends State<SignUpForm> {
         ),
       ),
     );
- }
+  }
 
- void _signUp() async {
+  void _signUp() async {
     String? userId = await signUpWithEmailPassword(
       _emailController.text,
       _passwordController.text,
     );
     if (userId != null) {
       // Sign-up successful, navigate to the main content
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const FirstRoute()),
-      );
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const FirstRoute()),
+        );
+      }
     } else {
-      // Sign-up failed, show an error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign-up failed')),
-      );
+      if (mounted) {
+        // Sign-up failed, show an error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Sign-up failed')),
+        );
+      }
     }
- }
+  }
+}
+
+class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
+
+  @override
+  _MapScreenState createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  GoogleMapController? mapController;
+  LatLng? selectedLocation;
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+
+  void _selectLocation(LatLng location) {
+    setState(() {
+      selectedLocation = location;
+    });
+    _convertAddressToCoordinates(location);
+  }
+
+  Future<void> _convertAddressToCoordinates(LatLng location) async {
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(location.latitude, location.longitude);
+      Placemark place = placemarks[0];
+      if (kDebugMode) {
+        print(
+            "Selected address: ${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Select Location'),
+      ),
+      body: GoogleMap(
+        onMapCreated: _onMapCreated,
+        initialCameraPosition: const CameraPosition(
+          target: LatLng(37.42796133580664, -122.085749655962),
+          zoom: 14.4746,
+        ),
+        onTap: (LatLng location) {
+          _selectLocation(location);
+        },
+      ),
+    );
+  }
 }
