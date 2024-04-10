@@ -231,7 +231,7 @@ class FirstRouteState extends State<FirstRoute> {
 
 
 class SecondRoute extends StatelessWidget {
- const SecondRoute({Key? key}) : super(key: key);
+ const SecondRoute({super.key});
 
  Future<int> getTotalEvents() async {
     int totalJEvents = 0;
@@ -262,7 +262,7 @@ class SecondRoute extends StatelessWidget {
             future: getTotalEvents(),
             builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else {
@@ -276,7 +276,7 @@ class SecondRoute extends StatelessWidget {
                           title: Text('Title $index'),
                           subtitle: Text('Subtitle $index'),
                         ),
-                        if (index < totalJEvents - 1) Divider(),
+                        if (index < totalJEvents - 1) const Divider(),
                       ],
                     );
                  },
