@@ -1,18 +1,15 @@
-// ignore_for_file: library_private_types_in_public_api
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
 
-import 'event.dart';
+import 'jevent.dart';
 import 'point.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
-//import 'event.dart';
 import 'firebase_options.dart';
-//import 'point.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final firestore = FirebaseFirestore.instance;
@@ -29,6 +26,8 @@ Future<void> signOut() async {
     }
   }
 }
+
+
 
 Future<String?> signInWithEmailPassword(String email, String password) async {
   try {
@@ -84,7 +83,7 @@ Point? createPoint(String inputted) {
 
 String createEvent(String textyInput) {
   List<String> jevents = textyInput.split('#');
-  Event event = Event(
+  Jevent jevent = Jevent(
     name: jevents[0],
     date: jevents[1],
     location: createPoint(
@@ -92,9 +91,9 @@ String createEvent(String textyInput) {
     hostName: jevents.last,
   );
   if (kDebugMode) {
-    print(event);
+    print(jevent);
   }
-  return event.toString();
+  return jevent.toString();
 }
 
 Future<void> addPoint(Point point) async {
@@ -102,7 +101,7 @@ Future<void> addPoint(Point point) async {
   await firestore.collection('points').add(pointMap);
 }
 
-Future<void> addEvent(Event event) async {
+Future<void> addEvent(Jevent jevent) async {
   String userId = FirebaseAuth.instance.currentUser!.uid;
   DocumentReference userDocRef = firestore.collection('users').doc(userId);
 
@@ -114,12 +113,12 @@ Future<void> addEvent(Event event) async {
       (userDocSnapshot.data() as Map<String, dynamic>).containsKey('events')) {
     // If the events array exists, append the new event
     await userDocRef.update({
-      'events': FieldValue.arrayUnion([event.toMap()]),
+      'events': FieldValue.arrayUnion([jevent.toMap()]),
     });
   } else {
     // If the events array does not exist, create it with the new event
     await userDocRef.set({
-      'events': [event.toMap()],
+      'events': [jevent.toMap()],
     }, SetOptions(merge: true)); // Use merge to avoid overwriting other fields
   }
 }
@@ -149,10 +148,10 @@ class FirstRoute extends StatefulWidget {
   const FirstRoute({super.key});
 
   @override
-  _FirstRouteState createState() => _FirstRouteState();
+  FirstRouteState createState() => FirstRouteState();
 }
 
-class _FirstRouteState extends State<FirstRoute> {
+class FirstRouteState extends State<FirstRoute> {
   String? please = 'press to work(please)';
 
   @override
@@ -229,12 +228,64 @@ class _FirstRouteState extends State<FirstRoute> {
   }
 }
 
-class SecondRoute extends StatelessWidget {
-  const SecondRoute({super.key});
 
-  @override
-  Widget build(BuildContext context) {
+
+class SecondRoute extends StatelessWidget {
+ const SecondRoute({Key? key}) : super(key: key);
+
+ Future<int> getTotalEvents() async {
+    int totalJEvents = 0;
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final QuerySnapshot querySnapshot = await firestore.collection('users').get();
+
+    for (var doc in querySnapshot.docs) {
+      final List<dynamic> jevents = doc['events'];
+      
+        totalJEvents += jevents.length;
+      
+    }
+
+    return totalJEvents;
+ }
+
+ @override
+ Widget build(BuildContext context) {
     return Scaffold(
+      body: SizedBox(
+        width: 300, // Set the width of the SizedBox
+        height: 500, // Set the height of the SizedBox
+        child: Card(
+          margin: const EdgeInsets.all(10.0),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          color: const Color.fromARGB(60, 255, 241, 241).withOpacity(0.25),
+          child: FutureBuilder<int>(
+            future: getTotalEvents(),
+            builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                final int totalJEvents = snapshot.data!;
+                return ListView.builder(
+                 itemCount: totalJEvents,
+                 itemBuilder: (BuildContext context, int index) {
+                    return Column(
+                      children: [
+                        ListTile(
+                          title: Text('Title $index'),
+                          subtitle: Text('Subtitle $index'),
+                        ),
+                        if (index < totalJEvents - 1) Divider(),
+                      ],
+                    );
+                 },
+                );
+              }
+            },
+          ),
+        ),
+      ),
       appBar: AppBar(
         title: const Text('Second Route'),
         automaticallyImplyLeading: false,
@@ -249,7 +300,6 @@ class SecondRoute extends StatelessWidget {
             )
           ],
         ),
-        
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
@@ -265,36 +315,36 @@ class SecondRoute extends StatelessWidget {
               color: Colors.black,
               tabs: const [
                 GButton(
-                  icon: LineIcons.home,
-                  text: 'Home',
+                 icon: LineIcons.home,
+                 text: 'Home',
                 ),
                 GButton(
-                  icon: LineIcons.search,
-                  text: 'Search',
+                 icon: LineIcons.search,
+                 text: 'Search',
                 ),
                 GButton(
-                  icon: LineIcons.user,
-                  text: 'Profile',
+                 icon: LineIcons.user,
+                 text: 'Profile',
                 ),
               ],
               selectedIndex: 1,
               onTabChange: (index) {
                 switch (index) {
-                  case 0:
+                 case 0:
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const FirstRoute()),
                     );
                     break;
-                  case 2:
+                 case 2:
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const ThirdRoute()),
                     );
                     break;
-                  default:
+                 default:
                     break;
                 }
               },
@@ -303,17 +353,18 @@ class SecondRoute extends StatelessWidget {
         ),
       ),
     );
-  }
+ }
 }
+
 
 class ThirdRoute extends StatefulWidget {
   const ThirdRoute({super.key});
 
   @override
-  _ThirdRouteState createState() => _ThirdRouteState();
+  ThirdRouteState createState() => ThirdRouteState();
 }
 
-class _ThirdRouteState extends State<ThirdRoute> {
+class ThirdRouteState extends State<ThirdRoute> {
   String? please = 'hi';
   TextEditingController mc1 = TextEditingController();
   TextEditingController mc2 = TextEditingController();
@@ -329,7 +380,7 @@ class _ThirdRouteState extends State<ThirdRoute> {
     }
   }
 
-  Event? newEvent;
+  Jevent? newEvent;
 
   String? name;
   String? date;
@@ -358,6 +409,7 @@ class _ThirdRouteState extends State<ThirdRoute> {
           onPressed: () async {
             await signOut();
             // Call the sign-out function
+            // ignore: use_build_context_synchronously
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                   builder: (context) =>
@@ -431,7 +483,7 @@ class _ThirdRouteState extends State<ThirdRoute> {
 
                     // Check if the date matches the format
                     if (dateFormat.hasMatch(date!)) {
-                      newEvent = Event(
+                      newEvent = Jevent(
                         name: name,
                         date: date,
                         location: createPoint(
@@ -448,7 +500,6 @@ class _ThirdRouteState extends State<ThirdRoute> {
                         print('User ID: $userId');
                       } // Print the user ID
                       addEvent(newEvent!);
-                      
                     } else {
                       // Show an error message or handle the invalid date format
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -535,10 +586,10 @@ class SignInForm extends StatefulWidget {
   const SignInForm({super.key});
 
   @override
-  _SignInFormState createState() => _SignInFormState();
+  SignInFormState createState() => SignInFormState();
 }
 
-class _SignInFormState extends State<SignInForm> {
+class SignInFormState extends State<SignInForm> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -639,10 +690,10 @@ class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
 
   @override
-  _SignUpFormState createState() => _SignUpFormState();
+  SignUpFormState createState() => SignUpFormState();
 }
 
-class _SignUpFormState extends State<SignUpForm> {
+class SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -716,10 +767,10 @@ class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 
   @override
-  _MapScreenState createState() => _MapScreenState();
+  MapScreenState createState() => MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class MapScreenState extends State<MapScreen> {
   GoogleMapController? mapController;
   LatLng? selectedLocation;
 
