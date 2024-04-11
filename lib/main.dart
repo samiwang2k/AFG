@@ -1,3 +1,5 @@
+// ignore_for_file: no_logic_in_create_state
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
@@ -27,6 +29,8 @@ Future<void> signOut() async {
   }
 }
 
+String? userNumber;
+
 Future<String?> signInWithEmailPassword(String email, String password) async {
   try {
     UserCredential userCredential =
@@ -35,6 +39,7 @@ Future<String?> signInWithEmailPassword(String email, String password) async {
       password: password,
     );
     // The user is signed in, return the user ID
+    userNumber=userCredential.user?.uid;
     return userCredential.user?.uid;
   } on FirebaseAuthException catch (e) {
     // Handle sign-in errors
@@ -203,7 +208,7 @@ class FirstRouteState extends State<FirstRoute> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const SecondRoute()),
+                          builder: (context) => SecondRoute()),
                     );
 
                     break;
@@ -226,8 +231,20 @@ class FirstRouteState extends State<FirstRoute> {
   }
 }
 
-class SecondRoute extends StatelessWidget {
-  const SecondRoute({super.key});
+class SecondRoute extends StatefulWidget {
+ SecondRoute({super.key});
+List<String>? master=[];
+ @override
+ _SecondRouteState createState() => _SecondRouteState();
+}
+
+class _SecondRouteState extends State<SecondRoute> {
+ @override
+ void initState() {
+    super.initState();
+    
+    getAllEventNames();
+ }
 
   Future<int> getTotalEvents() async {
     int totalJEvents = 0;
@@ -242,7 +259,25 @@ class SecondRoute extends StatelessWidget {
     }
 
     return totalJEvents;
-  }
+ }
+ 
+Future<void> getAllEventNames() async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final QuerySnapshot querySnapshot = await firestore.collection('users').get();
+
+    for (var doc in querySnapshot.docs) {
+        final List<dynamic> jevents = doc['events'];
+
+        for (var thingy in jevents) {
+            if (thingy['name'] != null) {
+                widget.master?.add(thingy['name']); // Use widget.master to access the master list
+            }
+        }
+    }
+}
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -270,9 +305,9 @@ class SecondRoute extends StatelessWidget {
                     return Column(
                       children: [
                         ListTile(
-                          title: Text('Title $index'),
-                          subtitle: Text('Subtitle $index'),
-                        ),
+                      title: Text(widget.master![index]),
+                      subtitle: Text('Subtitle $index'),
+                    ),
                         if (index < totalJEvents - 1) const Divider(),
                       ],
                     );
@@ -350,7 +385,9 @@ class SecondRoute extends StatelessWidget {
         ),
       ),
     );
-  }
+ }
+ 
+  
 }
 
 class ThirdRoute extends StatefulWidget {
@@ -563,7 +600,7 @@ class ThirdRouteState extends State<ThirdRoute> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const SecondRoute()),
+                          builder: (context) => SecondRoute()),
                     );
                     break;
                   default:
