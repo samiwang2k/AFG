@@ -301,14 +301,21 @@ class SecondRouteState extends State<SecondRoute> {
                   itemCount: totalJEvents,
                   itemBuilder: (BuildContext context, int index) {
                     return Column(
-                      children: [
-                        ListTile(
-                          title: Text(widget.allJevents![index]),
-                          subtitle: Text('$index'),
-                        ),
-                        if (index < totalJEvents - 1) const Divider(),
-                      ],
-                    );
+ children: [
+    GestureDetector(
+      onTap: () {
+        // Handle the tap event here
+        print('ListTile tapped');
+      },
+      child: ListTile(
+        title: Text(widget.allJevents![index]),
+        subtitle: Text('$index'),
+      ),
+    ),
+    if (index < totalJEvents - 1) const Divider(),
+ ],
+);
+
                   },
                 );
               }
