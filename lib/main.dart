@@ -1,11 +1,8 @@
-// ignore_for_file: no_logic_in_create_state
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
-
 import 'jevent.dart';
 import 'point.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,7 +17,7 @@ Future<void> signOut() async {
   try {
     await FirebaseAuth.instance.signOut();
     if (kDebugMode) {
-      print("User signed out");
+      print('User signed out');
     }
   } catch (e) {
     if (kDebugMode) {
@@ -39,7 +36,7 @@ Future<String?> signInWithEmailPassword(String email, String password) async {
       password: password,
     );
     // The user is signed in, return the user ID
-    userNumber=userCredential.user?.uid;
+    userNumber = userCredential.user?.uid;
     return userCredential.user?.uid;
   } on FirebaseAuthException catch (e) {
     // Handle sign-in errors
@@ -155,7 +152,7 @@ class FirstRoute extends StatefulWidget {
 }
 
 class FirstRouteState extends State<FirstRoute> {
-  String? please = 'press to work(please)';
+  String? please = 'press to work (please)';
 
   @override
   Widget build(BuildContext context) {
@@ -207,8 +204,7 @@ class FirstRouteState extends State<FirstRoute> {
                   case 1:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => SecondRoute()),
+                      MaterialPageRoute(builder: (context) => SecondRoute()),
                     );
 
                     break;
@@ -232,19 +228,21 @@ class FirstRouteState extends State<FirstRoute> {
 }
 
 class SecondRoute extends StatefulWidget {
- SecondRoute({super.key});
-List<String>? master=[];
- @override
- _SecondRouteState createState() => _SecondRouteState();
+  SecondRoute({super.key});
+  final List<String>? allJevents = [];
+  final List<String>? allHosts = [];
+
+  @override
+  SecondRouteState createState() => SecondRouteState();
 }
 
-class _SecondRouteState extends State<SecondRoute> {
- @override
- void initState() {
+class SecondRouteState extends State<SecondRoute> {
+  @override
+  void initState() {
     super.initState();
-    
+
     getAllEventNames();
- }
+  }
 
   Future<int> getTotalEvents() async {
     int totalJEvents = 0;
@@ -259,25 +257,25 @@ class _SecondRouteState extends State<SecondRoute> {
     }
 
     return totalJEvents;
- }
- 
-Future<void> getAllEventNames() async {
+  }
+
+  Future<void> getAllEventNames() async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final QuerySnapshot querySnapshot = await firestore.collection('users').get();
+    final QuerySnapshot querySnapshot =
+        await firestore.collection('users').get();
 
     for (var doc in querySnapshot.docs) {
-        final List<dynamic> jevents = doc['events'];
+      final List<dynamic> jevents = doc['events'];
 
-        for (var thingy in jevents) {
-            if (thingy['name'] != null) {
-                widget.master?.add(thingy['name']); // Use widget.master to access the master list
-            }
+      for (var thingy in jevents) {
+        if (thingy['name'] != null) {
+          widget.allJevents?.add(thingy['name']);
+
+          // Use widget.allJevents to access the allJevents list
         }
+      }
     }
-}
-
-
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -305,9 +303,9 @@ Future<void> getAllEventNames() async {
                     return Column(
                       children: [
                         ListTile(
-                      title: Text(widget.master![index]),
-                      subtitle: Text('Subtitle $index'),
-                    ),
+                          title: Text(widget.allJevents![index]),
+                          subtitle: Text('$index'),
+                        ),
                         if (index < totalJEvents - 1) const Divider(),
                       ],
                     );
@@ -385,9 +383,7 @@ Future<void> getAllEventNames() async {
         ),
       ),
     );
- }
- 
-  
+  }
 }
 
 class ThirdRoute extends StatefulWidget {
@@ -510,7 +506,7 @@ class ThirdRouteState extends State<ThirdRoute> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    // Regular expression to match the date format "mm/dd/yyyy"
+                    // Regular expression to match the date format 'mm/dd/yyyy'
                     final RegExp dateFormat = RegExp(
                         r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
 
@@ -599,8 +595,7 @@ class ThirdRouteState extends State<ThirdRoute> {
                   case 1:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => SecondRoute()),
+                      MaterialPageRoute(builder: (context) => SecondRoute()),
                     );
                     break;
                   default:
@@ -825,7 +820,7 @@ class MapScreenState extends State<MapScreen> {
       Placemark place = placemarks[0];
       if (kDebugMode) {
         print(
-            "Selected address: ${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}");
+            'Selected address: ${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}');
       }
     } catch (e) {
       if (kDebugMode) {

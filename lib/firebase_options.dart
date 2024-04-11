@@ -26,10 +26,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -71,10 +68,21 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyAOQFgFNlroJsYMlp67gac0_QMCCUfyokE',
-    appId: '1:533992936885:ios:b049fd0c5f73b077bf35fc',
+    appId: '1:533992936885:ios:18d117bb88de5481bf35fc',
     messagingSenderId: '533992936885',
     projectId: 'jevents-afg',
     storageBucket: 'jevents-afg.appspot.com',
-    iosBundleId: 'com.example.afg.RunnerTests',
+    iosBundleId: 'com.example.afg',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDOer_GpRvu2ZOvYNUDUuF93JnjVDDgAeQ',
+    appId: '1:533992936885:web:410a95bf10abe353bf35fc',
+    messagingSenderId: '533992936885',
+    projectId: 'jevents-afg',
+    authDomain: 'jevents-afg.firebaseapp.com',
+    storageBucket: 'jevents-afg.appspot.com',
+    measurementId: 'G-93M9BEC43F',
+  );
+
 }
