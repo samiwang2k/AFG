@@ -27,8 +27,6 @@ Future<void> signOut() async {
   }
 }
 
-
-
 Future<String?> signInWithEmailPassword(String email, String password) async {
   try {
     UserCredential userCredential =
@@ -228,35 +226,34 @@ class FirstRouteState extends State<FirstRoute> {
   }
 }
 
-
-
 class SecondRoute extends StatelessWidget {
- const SecondRoute({super.key});
+  const SecondRoute({super.key});
 
- Future<int> getTotalEvents() async {
+  Future<int> getTotalEvents() async {
     int totalJEvents = 0;
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final QuerySnapshot querySnapshot = await firestore.collection('users').get();
+    final QuerySnapshot querySnapshot =
+        await firestore.collection('users').get();
 
     for (var doc in querySnapshot.docs) {
       final List<dynamic> jevents = doc['events'];
-      
-        totalJEvents += jevents.length;
-      
+
+      totalJEvents += jevents.length;
     }
 
     return totalJEvents;
- }
+  }
 
- @override
- Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SizedBox(
         width: 300, // Set the width of the SizedBox
         height: 500, // Set the height of the SizedBox
         child: Card(
           margin: const EdgeInsets.all(10.0),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           color: const Color.fromARGB(60, 255, 241, 241).withOpacity(0.25),
           child: FutureBuilder<int>(
             future: getTotalEvents(),
@@ -268,8 +265,8 @@ class SecondRoute extends StatelessWidget {
               } else {
                 final int totalJEvents = snapshot.data!;
                 return ListView.builder(
-                 itemCount: totalJEvents,
-                 itemBuilder: (BuildContext context, int index) {
+                  itemCount: totalJEvents,
+                  itemBuilder: (BuildContext context, int index) {
                     return Column(
                       children: [
                         ListTile(
@@ -279,7 +276,7 @@ class SecondRoute extends StatelessWidget {
                         if (index < totalJEvents - 1) const Divider(),
                       ],
                     );
-                 },
+                  },
                 );
               }
             },
@@ -315,36 +312,36 @@ class SecondRoute extends StatelessWidget {
               color: Colors.black,
               tabs: const [
                 GButton(
-                 icon: LineIcons.home,
-                 text: 'Home',
+                  icon: LineIcons.home,
+                  text: 'Home',
                 ),
                 GButton(
-                 icon: LineIcons.search,
-                 text: 'Search',
+                  icon: LineIcons.search,
+                  text: 'Search',
                 ),
                 GButton(
-                 icon: LineIcons.user,
-                 text: 'Profile',
+                  icon: LineIcons.user,
+                  text: 'Profile',
                 ),
               ],
               selectedIndex: 1,
               onTabChange: (index) {
                 switch (index) {
-                 case 0:
+                  case 0:
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const FirstRoute()),
                     );
                     break;
-                 case 2:
+                  case 2:
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const ThirdRoute()),
                     );
                     break;
-                 default:
+                  default:
                     break;
                 }
               },
@@ -353,9 +350,8 @@ class SecondRoute extends StatelessWidget {
         ),
       ),
     );
- }
+  }
 }
-
 
 class ThirdRoute extends StatefulWidget {
   const ThirdRoute({super.key});
