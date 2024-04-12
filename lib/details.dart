@@ -16,15 +16,36 @@ class DetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
+         appBar: AppBar(
+        title: const Text('Event Details'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: Center(
-        child: Text('This is the detail page for $title'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+              Text(
+              title,
+              style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(location),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Host:'),
+                Text(hostName),
+              ],
+            ),
+            const Text('Date:'),
+            Text(date),
+          ],
+        ),
       ),
     );
   }
