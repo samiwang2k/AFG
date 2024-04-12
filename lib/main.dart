@@ -229,8 +229,10 @@ class FirstRouteState extends State<FirstRoute> {
 
 class SecondRoute extends StatefulWidget {
   SecondRoute({super.key});
-  final List<String>? allJevents = [];
+  final List<String>? allJeventNames = [];
   final List<String>? allHosts = [];
+  final List<String>? allDates = [];
+  final List<String>? allLocs = [];
 
   @override
   SecondRouteState createState() => SecondRouteState();
@@ -241,7 +243,7 @@ class SecondRouteState extends State<SecondRoute> {
   void initState() {
     super.initState();
 
-    getAllEventNames();
+    getAllEventData();
   }
 
   Future<int> getTotalEvents() async {
@@ -259,7 +261,7 @@ class SecondRouteState extends State<SecondRoute> {
     return totalJEvents;
   }
 
-  Future<void> getAllEventNames() async {
+  Future<void> getAllEventData() async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     final QuerySnapshot querySnapshot =
         await firestore.collection('users').get();
@@ -268,11 +270,15 @@ class SecondRouteState extends State<SecondRoute> {
       final List<dynamic> jevents = doc['events'];
 
       for (var thingy in jevents) {
-        if (thingy['name'] != null) {
-          widget.allJevents?.add(thingy['name']);
+        
+        widget.allJeventNames?.add(thingy['name']);
+        widget.allHosts?.add(thingy['hostName']);
+        widget.allDates?.add(thingy['date']);
+        widget.allLocs?.add(thingy['Location'].toString());
+        
 
-          // Use widget.allJevents to access the allJevents list
-        }
+          // Use widget.allJeventNames to access the allJeventNames list
+        
       }
     }
   }
@@ -301,21 +307,21 @@ class SecondRouteState extends State<SecondRoute> {
                   itemCount: totalJEvents,
                   itemBuilder: (BuildContext context, int index) {
                     return Column(
- children: [
-    GestureDetector(
-      onTap: () {
-        // Handle the tap event here
-        print('ListTile tapped');
-      },
-      child: ListTile(
-        title: Text(widget.allJevents![index]),
-        subtitle: Text('$index'),
-      ),
-    ),
-    if (index < totalJEvents - 1) const Divider(),
- ],
-);
-
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            // Handle the tap event here
+                            print('ListTile tapped');
+                            
+                          },
+                          child: ListTile(
+                            title: Text(widget.allJeventNames![index]),
+                            subtitle: Text('${widget.allHosts![index]},${widget.allDates![index]},${widget.allLocs![index]}'),
+                          ),
+                        ),
+                        if (index < totalJEvents - 1) const Divider(),
+                      ],
+                    );
                   },
                 );
               }
