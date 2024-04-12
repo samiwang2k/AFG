@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
+import 'details.dart';
 import 'jevent.dart';
 import 'point.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -270,7 +271,6 @@ class SecondRouteState extends State<SecondRoute> {
       final List<dynamic> jevents = doc['events'];
 
       for (var thingy in jevents) {
-        
         widget.allJeventNames?.add(thingy['name']);
         widget.allHosts?.add(thingy['hostName']);
         widget.allDates?.add(thingy['date']);
@@ -278,8 +278,7 @@ class SecondRouteState extends State<SecondRoute> {
         widget.allLocs?.add(thingy['location'].toString());
         
 
-          // Use widget.allJeventNames to access the allJeventNames list
-        
+        // Use widget.allJeventNames to access the allJeventNames list
       }
     }
   }
@@ -294,7 +293,7 @@ class SecondRouteState extends State<SecondRoute> {
           margin: const EdgeInsets.all(10.0),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          color: const Color.fromARGB(60, 255, 241, 241).withOpacity(0.25),
+          color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.25),
           child: FutureBuilder<int>(
             future: getTotalEvents(),
             builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
@@ -308,16 +307,28 @@ class SecondRouteState extends State<SecondRoute> {
                   itemCount: totalJEvents,
                   itemBuilder: (BuildContext context, int index) {
                     return Column(
-                      children: [
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
                         GestureDetector(
                           onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DetailPage(
+                                      title: widget.allJeventNames![index],
+                                      hostName: widget.allHosts![index],
+                                      date: widget.allDates![index],
+                                      location: widget.allLocs![index])),
+                            );
                             // Handle the tap event here
-                            print('ListTile tapped');
-                            
+                            if (kDebugMode) {
+                              print('ListTile tapped');
+                            }
                           },
                           child: ListTile(
                             title: Text(widget.allJeventNames![index]),
-                            subtitle: Text('${widget.allHosts![index]},${widget.allDates![index]},${widget.allLocs![index]}'),
+                            subtitle: Text(
+                                '${widget.allHosts![index]},${widget.allDates![index]},${widget.allLocs![index]}'),
                           ),
                         ),
                         if (index < totalJEvents - 1) const Divider(),
@@ -430,6 +441,7 @@ class ThirdRouteState extends State<ThirdRoute> {
   String? host;
   String? place;
   bool _showTextFields = false;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -464,98 +476,121 @@ class ThirdRouteState extends State<ThirdRoute> {
         if (_showTextFields) // Correctly placed conditional rendering
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                TextField(
-                  controller: mc1,
-                  textInputAction: TextInputAction.next,
-                  onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                  onChanged: (val1) {
-                    setState(() {
-                      name = val1;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your name', // Hint for the name field
-                  ),
-                ),
-                TextField(
-                  controller: mc2,
-                  textInputAction: TextInputAction.next,
-                  onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                  onChanged: (val2) {
-                    setState(() {
-                      date = val2;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Enter the date', // Hint for the date field
-                  ),
-                ),
-                TextField(
-                  controller: mc3,
-                  textInputAction: TextInputAction.next,
-                  onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                  onChanged: (val3) {
-                    setState(() {
-                      place = val3;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Enter the place', // Hint for the place field
-                  ),
-                ),
-                TextField(
-                  controller: mc4,
-                  textInputAction: TextInputAction.done,
-                  onEditingComplete: () => FocusScope.of(context).unfocus(),
-                  onChanged: (val4) {
-                    setState(() {
-                      host = val4;
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Enter the host', // Hint for the host field
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Regular expression to match the date format 'mm/dd/yyyy'
-                    final RegExp dateFormat = RegExp(
-                        r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
-
-                    // Check if the date matches the format
-                    if (dateFormat.hasMatch(date!)) {
-                      newEvent = Jevent(
-                        name: name,
-                        date: date,
-                        location: createPoint(
-                            place!), // Assuming createPoint is a function that converts 'place' to a Point object
-                        hostName: host,
-                      );
-                      _showTextFields = false;
-                      if (kDebugMode) {
-                        print(newEvent);
+            child: Form(
+              key:
+                  _formKey, // Assuming _formKey is defined as GlobalKey<FormState>
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: mc1,
+                    textInputAction: TextInputAction.next,
+                    onEditingComplete: () => FocusScope.of(context).nextFocus(),
+                    onChanged: (val1) {
+                      setState(() {
+                        name = val1;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'Enter your name',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your name';
                       }
-                      String userId = FirebaseAuth
-                          .instance.currentUser!.uid; // Get the user ID
-                      if (kDebugMode) {
-                        print('User ID: $userId');
-                      } // Print the user ID
-                      addEvent(newEvent!);
-                    } else {
-                      // Show an error message or handle the invalid date format
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text(
-                                'Please enter a valid date in the format mm/dd/yyyy')),
-                      );
-                    }
-                    MaterialPageRoute(builder: (context) => const MapScreen());
-                  },
-                  child: const Text('confirm'),
-                )
-              ],
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: mc2,
+                    textInputAction: TextInputAction.next,
+                    onEditingComplete: () => FocusScope.of(context).nextFocus(),
+                    onChanged: (val2) {
+                      setState(() {
+                        date = val2;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'Enter the date (mm/dd/yyyy)',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the date';
+                      }
+                      // Regular expression to match the date format 'mm/dd/yyyy'
+                      final RegExp dateFormat = RegExp(
+                          r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
+                      if (!dateFormat.hasMatch(value)) {
+                        return 'Please enter a valid date in the format mm/dd/yyyy';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: mc3,
+                    textInputAction: TextInputAction.next,
+                    onEditingComplete: () => FocusScope.of(context).nextFocus(),
+                    onChanged: (val3) {
+                      setState(() {
+                        place = val3;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'Enter the place (latitude, longitude)',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the place';
+                      }
+                      // Regular expression to match the format (double, double)
+                      final RegExp locationFormat =
+                          RegExp(r'^\(-?\d+(\.\d+)?,\s?-?\d+(\.\d+)?\)$');
+                      if (!locationFormat.hasMatch(value)) {
+                        return 'Please enter a valid location in the format (latitude, longitude)';
+                      }
+                      // Optionally, parse the location into two double values
+                      final locationParts =
+                          value.substring(1, value.length - 1).split(',');
+                      final latitude = double.tryParse(locationParts[0].trim());
+                      final longitude =
+                          double.tryParse(locationParts[1].trim());
+                      if (latitude == null || longitude == null) {
+                        return 'Invalid location format';
+                      }
+                      // If you need to use the parsed latitude and longitude, you can do so here
+                      // For example, setting them to state variables or using them directly
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: mc4,
+                    textInputAction: TextInputAction.done,
+                    onEditingComplete: () => FocusScope.of(context).unfocus(),
+                    onChanged: (val4) {
+                      setState(() {
+                        host = val4;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: 'Enter the host',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter the host';
+                      }
+                      return null;
+                    },
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        // Your existing code for handling the form submission
+                        // For example, navigating to another screen or saving the data
+                      }
+                    },
+                    child: const Text('confirm'),
+                  )
+                ],
+              ),
             ),
           )
       ]),
