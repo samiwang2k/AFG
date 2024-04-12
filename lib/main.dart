@@ -274,7 +274,9 @@ class SecondRouteState extends State<SecondRoute> {
         widget.allJeventNames?.add(thingy['name']);
         widget.allHosts?.add(thingy['hostName']);
         widget.allDates?.add(thingy['date']);
+        print(thingy['location']);
         widget.allLocs?.add(thingy['location'].toString());
+        
 
         // Use widget.allJeventNames to access the allJeventNames list
       }
