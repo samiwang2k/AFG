@@ -1,18 +1,25 @@
-import 'package:afg/jevent.dart';
 import 'package:flutter/material.dart';
 
 class DetailPage extends StatelessWidget {
- final Jevent title;
+  final String title;
+  final String date;
+  final String location;
+  final String hostName;
 
- DetailPage({Key? key, required this.title}) : super(key: key);
+  const DetailPage(
+      {super.key,
+      required this.title,
+      required this.date,
+      required this.location,
+      required this.hostName});
 
- @override
- Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title.name!),
+        title: Text(title),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -20,5 +27,5 @@ class DetailPage extends StatelessWidget {
         child: Text('This is the detail page for $title'),
       ),
     );
- }
+  }
 }
