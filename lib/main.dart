@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
 import 'details.dart';
@@ -11,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 
 final firestore = FirebaseFirestore.instance;
 
@@ -274,9 +273,11 @@ class SecondRouteState extends State<SecondRoute> {
         widget.allJeventNames?.add(thingy['name']);
         widget.allHosts?.add(thingy['hostName']);
         widget.allDates?.add(thingy['date']);
-        print(thingy['location']);
-        widget.allLocs?.add(thingy['location'].toString());
-        
+        if (kDebugMode) {
+          print(thingy['location']);
+        }
+        widget.allLocs?.add(
+            'This event is taking place at (${thingy['location']['x']}, ${thingy['location']['y']}).');
 
         // Use widget.allJeventNames to access the allJeventNames list
       }
@@ -306,6 +307,18 @@ class SecondRouteState extends State<SecondRoute> {
                 return ListView.builder(
                   itemCount: totalJEvents,
                   itemBuilder: (BuildContext context, int index) {
+                    // Check if the index is within the valid range of the lists
+                    if (index >= widget.allJeventNames!.length ||
+                        index >= widget.allHosts!.length ||
+                        index >= widget.allDates!.length ||
+                        index >= widget.allLocs!.length) {
+                      // Handle the case where the index is out of range, e.g., return a default widget
+                      return const ListTile(
+                        title: Text('No more events'),
+                        subtitle: Text(''),
+                      );
+                    }
+
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -525,42 +538,79 @@ class ThirdRouteState extends State<ThirdRoute> {
                       return null;
                     },
                   ),
-                  TextFormField(
-                    controller: mc3,
-                    textInputAction: TextInputAction.next,
-                    onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                    onChanged: (val3) {
-                      setState(() {
-                        place = val3;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      hintText: 'Enter the place (latitude, longitude)',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter the place';
-                      }
-                      // Regular expression to match the format (double, double)
-                      final RegExp locationFormat =
-                          RegExp(r'^\(-?\d+(\.\d+)?,\s?-?\d+(\.\d+)?\)$');
-                      if (!locationFormat.hasMatch(value)) {
-                        return 'Please enter a valid location in the format (latitude, longitude)';
-                      }
-                      // Optionally, parse the location into two double values
-                      final locationParts =
-                          value.substring(1, value.length - 1).split(',');
-                      final latitude = double.tryParse(locationParts[0].trim());
-                      final longitude =
-                          double.tryParse(locationParts[1].trim());
-                      if (latitude == null || longitude == null) {
-                        return 'Invalid location format';
-                      }
-                      // If you need to use the parsed latitude and longitude, you can do so here
-                      // For example, setting them to state variables or using them directly
-                      return null;
-                    },
-                  ),
+                  // TextFormField(
+                  //   controller: mc3,
+                  //   textInputAction: TextInputAction.next,
+                  //   onEditingComplete: () => FocusScope.of(context).nextFocus(),
+                  //   onChanged: (val3) {
+                  //     setState(() {
+                  //       place = val3;
+                  //     });
+                  //   },
+                  //   decoration: const InputDecoration(
+                  //     hintText: 'Enter the place (latitude, longitude)',
+                  //   ),
+                  //   validator: (value) {
+                  //     if (value == null || value.isEmpty) {
+                  //       return 'Please enter the place';
+                  //     }
+                  //     // Regular expression to match the format (double, double)
+                  //     final RegExp locationFormat =
+                  //         RegExp(r'^\(-?\d+(\.\d+)?,\s?-?\d+(\.\d+)?\)$');
+                  //     if (!locationFormat.hasMatch(value)) {
+                  //       return 'Please enter a valid location in the format (latitude, longitude)';
+                  //     }
+                  //     // Optionally, parse the location into two double values
+                  //     final locationParts =
+                  //         value.substring(1, value.length - 1).split(',');
+                  //     final latitude = double.tryParse(locationParts[0].trim());
+                  //     final longitude =
+                  //         double.tryParse(locationParts[1].trim());
+                  //     if (latitude == null || longitude == null) {
+                  //       return 'Invalid location format';
+                  //     }
+                  //     // If you need to use the parsed latitude and longitude, you can do so here
+                  //     // For example, setting them to state variables or using them directly
+                  //     return null;
+                  //   },
+                  // ),
+                  ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Select Location'),
+                              content: OpenStreetMapSearchAndPick(
+                                buttonColor: Colors.blue,
+                                buttonText: 'Set Current Location',
+                                onPicked: (pickedData) {
+                                  if (kDebugMode) {
+                                    print(pickedData.latLong.latitude);
+                                  }
+                                  if (kDebugMode) {
+                                    print(pickedData.latLong.longitude);
+                                  }
+                                  if (kDebugMode) {
+                                    print(pickedData.address);
+                                  }
+                                  place =
+                                      '${pickedData.latLong.latitude},${pickedData.latLong.longitude}';
+                                },
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('Close'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: const Text('wow')),
                   TextFormField(
                     controller: mc4,
                     textInputAction: TextInputAction.done,
@@ -837,63 +887,5 @@ class SignUpFormState extends State<SignUpForm> {
         );
       }
     }
-  }
-}
-
-class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
-
-  @override
-  MapScreenState createState() => MapScreenState();
-}
-
-class MapScreenState extends State<MapScreen> {
-  GoogleMapController? mapController;
-  LatLng? selectedLocation;
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-  }
-
-  void _selectLocation(LatLng location) {
-    setState(() {
-      selectedLocation = location;
-    });
-    _convertAddressToCoordinates(location);
-  }
-
-  Future<void> _convertAddressToCoordinates(LatLng location) async {
-    try {
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(location.latitude, location.longitude);
-      Placemark place = placemarks[0];
-      if (kDebugMode) {
-        print(
-            'Selected address: ${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select Location'),
-      ),
-      body: GoogleMap(
-        onMapCreated: _onMapCreated,
-        initialCameraPosition: const CameraPosition(
-          target: LatLng(37.42796133580664, -122.085749655962),
-          zoom: 14.4746,
-        ),
-        onTap: (LatLng location) {
-          _selectLocation(location);
-        },
-      ),
-    );
   }
 }
