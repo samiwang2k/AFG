@@ -276,8 +276,8 @@ class SecondRouteState extends State<SecondRoute> {
         if (kDebugMode) {
           print(thingy['location']);
         }
-        widget.allLocs?.add(
-            'This event is taking place at (${thingy['location']['x']}, ${thingy['location']['y']}).');
+        widget.allLocs
+            ?.add('${thingy['location']['x']}, ${thingy['location']['y']}');
 
         // Use widget.allJeventNames to access the allJeventNames list
       }
@@ -286,15 +286,17 @@ class SecondRouteState extends State<SecondRoute> {
 
   @override
   Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       body: SizedBox(
-        width: 300, // Set the width of the SizedBox
-        height: 500, // Set the height of the SizedBox
+        width: deviceWidth, // Set the width of the SizedBox
+        height: deviceHeight, // Set the height of the SizedBox
         child: Card(
           margin: const EdgeInsets.all(10.0),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.25),
+          color: const Color.fromARGB(255, 255, 255, 255).withOpacity(1),
           child: FutureBuilder<int>(
             future: getTotalEvents(),
             builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
@@ -538,7 +540,6 @@ class ThirdRouteState extends State<ThirdRoute> {
                       return null;
                     },
                   ),
-                  
                   ElevatedButton(
                       onPressed: () {
                         showDialog(

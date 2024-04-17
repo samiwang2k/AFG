@@ -69,4 +69,8 @@ flutter {
 
 dependencies {}
 
+tasks.named('mapDebugSourceSetPaths').configure {
+    dependsOn 'processDebugGoogleServices'
+}
+
 apply plugin: 'com.google.gms.google-services'
