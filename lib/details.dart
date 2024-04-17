@@ -38,8 +38,8 @@ class DetailPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Host:'),
-                Text(hostName),
+                Text('Host:$hostName'),
+                
               ],
             ),
             const Text('Date:'),

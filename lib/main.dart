@@ -538,42 +538,7 @@ class ThirdRouteState extends State<ThirdRoute> {
                       return null;
                     },
                   ),
-                  // TextFormField(
-                  //   controller: mc3,
-                  //   textInputAction: TextInputAction.next,
-                  //   onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                  //   onChanged: (val3) {
-                  //     setState(() {
-                  //       place = val3;
-                  //     });
-                  //   },
-                  //   decoration: const InputDecoration(
-                  //     hintText: 'Enter the place (latitude, longitude)',
-                  //   ),
-                  //   validator: (value) {
-                  //     if (value == null || value.isEmpty) {
-                  //       return 'Please enter the place';
-                  //     }
-                  //     // Regular expression to match the format (double, double)
-                  //     final RegExp locationFormat =
-                  //         RegExp(r'^\(-?\d+(\.\d+)?,\s?-?\d+(\.\d+)?\)$');
-                  //     if (!locationFormat.hasMatch(value)) {
-                  //       return 'Please enter a valid location in the format (latitude, longitude)';
-                  //     }
-                  //     // Optionally, parse the location into two double values
-                  //     final locationParts =
-                  //         value.substring(1, value.length - 1).split(',');
-                  //     final latitude = double.tryParse(locationParts[0].trim());
-                  //     final longitude =
-                  //         double.tryParse(locationParts[1].trim());
-                  //     if (latitude == null || longitude == null) {
-                  //       return 'Invalid location format';
-                  //     }
-                  //     // If you need to use the parsed latitude and longitude, you can do so here
-                  //     // For example, setting them to state variables or using them directly
-                  //     return null;
-                  //   },
-                  // ),
+                  
                   ElevatedButton(
                       onPressed: () {
                         showDialog(
@@ -596,6 +561,7 @@ class ThirdRouteState extends State<ThirdRoute> {
                                   }
                                   place =
                                       '${pickedData.latLong.latitude},${pickedData.latLong.longitude}';
+                                  Navigator.pop(context);
                                 },
                               ),
                               actions: <Widget>[
@@ -635,6 +601,35 @@ class ThirdRouteState extends State<ThirdRoute> {
                       if (_formKey.currentState!.validate()) {
                         // Your existing code for handling the form submission
                         // For example, navigating to another screen or saving the data
+                      }
+                      final RegExp dateFormat = RegExp(
+                          r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
+                      // Check if the date matches the format
+                      if (dateFormat.hasMatch(date!)) {
+                        newEvent = Jevent(
+                          name: name,
+                          date: date,
+                          location: createPoint(
+                              place!), // Assuming createPoint is a function that converts 'place' to a Point object
+                          hostName: host,
+                        );
+                        _showTextFields = false;
+                        if (kDebugMode) {
+                          print(newEvent);
+                        }
+                        String userId = FirebaseAuth
+                            .instance.currentUser!.uid; // Get the user ID
+                        if (kDebugMode) {
+                          print('User ID: $userId');
+                        } // Print the user ID
+                        addEvent(newEvent!);
+                      } else {
+                        // Show an error message or handle the invalid date format
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text(
+                                  'Please enter a valid date in the format mm/dd/yyyy')),
+                        );
                       }
                     },
                     child: const Text('confirm'),
