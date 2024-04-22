@@ -4,12 +4,57 @@ import 'package:line_icons/line_icons.dart';
 import 'details.dart';
 import 'jevent.dart';
 import 'point.dart';
+import 'styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter/material.dart';
+
+/// Determine the current position of the device.
+///
+/// When the location services are not enabled or permissions
+/// are denied the `Future` will return an error.
+Future<Position> _determinePosition() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  // Test if location services are enabled.
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    // Location services are not enabled don't continue
+    // accessing the position and request users of the 
+    // App to enable the location services.
+    return Future.error('Location services are disabled.');
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      // Permissions are denied, next time you could try
+      // requesting permissions again (this is also where
+      // Android's shouldShowRequestPermissionRationale 
+      // returned true. According to Android guidelines
+      // your App should show an explanatory UI now.
+      return Future.error('Location permissions are denied');
+    }
+  }
+  
+  if (permission == LocationPermission.deniedForever) {
+    // Permissions are denied forever, handle appropriately. 
+    return Future.error(
+      'Location permissions are permanently denied, we cannot request permissions.');
+  } 
+
+  // When we reach here, permissions are granted and we can
+  // continue accessing the position of the device.
+  
+  return Geolocator.getCurrentPosition();
+}
 
 final firestore = FirebaseFirestore.instance;
 
@@ -60,12 +105,14 @@ Future<void> main() async {
     runApp(const MaterialApp(
       title: 'AFG',
       home: FirstRoute(),
+      //theme: ThemeData(primaryColor: colorWhite, accentColor: colorGray, textTheme: width < 500 ? textThemeSmall : textThemeDefault, fontFamily: "Montserrat"),
     ));
   } else {
     // User is not signed in, show the SignInForm
-    runApp(const MaterialApp(
+    runApp( MaterialApp(
       title: 'AFG',
       home: SignInForm(),
+      //theme: ThemeData(primaryColor: colorWhite, colorScheme: const ColorScheme.light(secondary: colorGray), textTheme: width < 500 ? textThemeSmall : textThemeDefault, fontFamily: "Montserrat"),
     ));
   }
 }
@@ -138,9 +185,6 @@ void nav() => runApp(MaterialApp(
         return Directionality(textDirection: TextDirection.ltr, child: child!);
       },
       title: 'GNav',
-      theme: ThemeData(
-        primaryColor: Colors.grey[800],
-      ),
       home: const FirstRoute(),
     ));
 
@@ -242,9 +286,20 @@ class SecondRouteState extends State<SecondRoute> {
   @override
   void initState() {
     super.initState();
+    getPos();
+    
 
     getAllEventData();
   }
+  void getPos() async {
+ Position? currentPos = await _determinePosition();
+ if (currentPos != null) {
+    print(currentPos.latitude);
+    print(currentPos.longitude);
+ } else {
+    print('Position could not be determined.');
+ }
+}
 
   Future<int> getTotalEvents() async {
     int totalJEvents = 0;
@@ -275,6 +330,7 @@ class SecondRouteState extends State<SecondRoute> {
         widget.allDates?.add(thingy['date']);
         if (kDebugMode) {
           print(thingy['location']);
+
         }
         widget.allLocs
             ?.add('${thingy['location']['x']}, ${thingy['location']['y']}');
@@ -852,7 +908,10 @@ class SignUpFormState extends State<SignUpForm> {
             ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
-                  _signUp();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignInForm()),
+                    );
                 }
               },
               child: const Text('Sign Up'),

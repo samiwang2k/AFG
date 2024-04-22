@@ -47,7 +47,7 @@ class DetailPage extends StatelessWidget {
               child: Text(location),
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Host:$hostName'),
               ],
