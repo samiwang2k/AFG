@@ -4,7 +4,7 @@ import 'package:line_icons/line_icons.dart';
 import 'details.dart';
 import 'jevent.dart';
 import 'point.dart';
-import 'styles.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
