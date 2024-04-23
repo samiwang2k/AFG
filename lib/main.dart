@@ -4,7 +4,6 @@ import 'package:line_icons/line_icons.dart';
 import 'details.dart';
 import 'jevent.dart';
 import 'point.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,49 +11,23 @@ import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter/material.dart';
+import 'styles.dart';
 
 /// Determine the current position of the device.
 ///
 /// When the location services are not enabled or permissions
 /// are denied the `Future` will return an error.
 Future<Position> _determinePosition() async {
-  bool serviceEnabled;
-  LocationPermission permission;
-
-  // Test if location services are enabled.
-  serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    // Location services are not enabled don't continue
-    // accessing the position and request users of the 
-    // App to enable the location services.
-    return Future.error('Location services are disabled.');
-  }
-
-  permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
+    LocationPermission permission;
     permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
-      // Permissions are denied, next time you could try
-      // requesting permissions again (this is also where
-      // Android's shouldShowRequestPermissionRationale 
-      // returned true. According to Android guidelines
-      // your App should show an explanatory UI now.
-      return Future.error('Location permissions are denied');
+    permission = await Geolocator.checkPermission();
+    permission = await Geolocator.requestPermission();
+    if( permission== LocationPermission.denied){
+         //nothing
     }
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
+    return position;
   }
-  
-  if (permission == LocationPermission.deniedForever) {
-    // Permissions are denied forever, handle appropriately. 
-    return Future.error(
-      'Location permissions are permanently denied, we cannot request permissions.');
-  } 
-
-  // When we reach here, permissions are granted and we can
-  // continue accessing the position of the device.
-  
-  return Geolocator.getCurrentPosition();
-}
 
 final firestore = FirebaseFirestore.instance;
 
@@ -109,7 +82,7 @@ Future<void> main() async {
     ));
   } else {
     // User is not signed in, show the SignInForm
-    runApp( MaterialApp(
+    runApp(const MaterialApp(
       title: 'AFG',
       home: SignInForm(),
       //theme: ThemeData(primaryColor: colorWhite, colorScheme: const ColorScheme.light(secondary: colorGray), textTheme: width < 500 ? textThemeSmall : textThemeDefault, fontFamily: "Montserrat"),
@@ -287,19 +260,19 @@ class SecondRouteState extends State<SecondRoute> {
   void initState() {
     super.initState();
     getPos();
-    
 
     getAllEventData();
   }
+
   void getPos() async {
- Position? currentPos = await _determinePosition();
- if (currentPos != null) {
-    print(currentPos.latitude);
-    print(currentPos.longitude);
- } else {
-    print('Position could not be determined.');
- }
-}
+    Position? currentPos = await _determinePosition();
+    if (kDebugMode) {
+      print(currentPos.latitude);
+    }
+    if (kDebugMode) {
+      print(currentPos.longitude);
+    }
+  }
 
   Future<int> getTotalEvents() async {
     int totalJEvents = 0;
@@ -330,7 +303,6 @@ class SecondRouteState extends State<SecondRoute> {
         widget.allDates?.add(thingy['date']);
         if (kDebugMode) {
           print(thingy['location']);
-
         }
         widget.allLocs
             ?.add('${thingy['location']['x']}, ${thingy['location']['y']}');
@@ -344,136 +316,147 @@ class SecondRouteState extends State<SecondRoute> {
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      body: SizedBox(
-        width: deviceWidth, // Set the width of the SizedBox
-        height: deviceHeight, // Set the height of the SizedBox
-        child: Card(
-          margin: const EdgeInsets.all(10.0),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          color: const Color.fromARGB(255, 255, 255, 255).withOpacity(1),
-          child: FutureBuilder<int>(
-            future: getTotalEvents(),
-            builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else {
-                final int totalJEvents = snapshot.data!;
-                return ListView.builder(
-                  itemCount: totalJEvents,
-                  itemBuilder: (BuildContext context, int index) {
-                    // Check if the index is within the valid range of the lists
-                    if (index >= widget.allJeventNames!.length ||
-                        index >= widget.allHosts!.length ||
-                        index >= widget.allDates!.length ||
-                        index >= widget.allLocs!.length) {
-                      // Handle the case where the index is out of range, e.g., return a default widget
-                      return const ListTile(
-                        title: Text('No more events'),
-                        subtitle: Text(''),
-                      );
-                    }
+    return Theme(
+      data: ThemeData(
+        primaryColor: colorWhite,
+        colorScheme: const ColorScheme.light(secondary: colorGray),
+        textTheme: deviceWidth < 5000 ? textThemeSmall : textThemeDefault,
+        fontFamily: "Montserrat",
+      ),
+      child: Scaffold(
+        body: SizedBox(
+          width: deviceWidth, // Set the width of the SizedBox
+          height: deviceHeight,
+           // Set the height of the SizedBox
+          child: Card(
+            color: const Color.fromARGB(255, 255, 255, 255).withOpacity(1),
+            margin: const EdgeInsets.all(10.0),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            child: FutureBuilder<int>(
+              future: getTotalEvents(),
+              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  final int totalJEvents = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: totalJEvents,
+                    itemBuilder: (BuildContext context, int index) {
+                      // Check if the index is within the valid range of the lists
+                      if (index >= widget.allJeventNames!.length ||
+                          index >= widget.allHosts!.length ||
+                          index >= widget.allDates!.length ||
+                          index >= widget.allLocs!.length) {
+                        // Handle the case where the index is out of range, e.g., return a default widget
+                        return const ListTile(
+                          title: Text('No more events'),
+                          subtitle: Text(''),
+                        );
+                      }
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DetailPage(
-                                      title: widget.allJeventNames![index],
-                                      hostName: widget.allHosts![index],
-                                      date: widget.allDates![index],
-                                      location: widget.allLocs![index])),
-                            );
-                            // Handle the tap event here
-                            if (kDebugMode) {
-                              print('ListTile tapped');
-                            }
-                          },
-                          child: ListTile(
-                            title: Text(widget.allJeventNames![index]),
-                            subtitle: Text(
-                                '${widget.allHosts![index]},${widget.allDates![index]},${widget.allLocs![index]}'),
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DetailPage(
+                                        title: widget.allJeventNames![index],
+                                        hostName: widget.allHosts![index],
+                                        date: widget.allDates![index],
+                                        location: widget.allLocs![index])),
+                              );
+                              // Handle the tap event here
+                              if (kDebugMode) {
+                                print('ListTile tapped');
+                              }
+                            },
+                            child: ListTile(
+                              title: Text(widget.allJeventNames![index]),
+                              subtitle: Text(
+                                  '${widget.allHosts![index]},${widget.allDates![index]},${widget.allLocs![index]}'),
+                            ),
                           ),
-                        ),
-                        if (index < totalJEvents - 1) const Divider(),
-                      ],
-                    );
-                  },
-                );
-              }
-            },
-          ),
-        ),
-      ),
-      appBar: AppBar(
-        title: const Text('Second Route'),
-        automaticallyImplyLeading: false,
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 20,
-              color: Colors.black.withOpacity(.1),
-            )
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
-            child: GNav(
-              rippleColor: Colors.grey[300]!,
-              hoverColor: Colors.grey[100]!,
-              gap: 8,
-              activeColor: Colors.black,
-              iconSize: 24,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              duration: const Duration(milliseconds: 400),
-              tabBackgroundColor: Colors.grey[100]!,
-              color: Colors.black,
-              tabs: const [
-                GButton(
-                  icon: LineIcons.home,
-                  text: 'Home',
-                ),
-                GButton(
-                  icon: LineIcons.search,
-                  text: 'Search',
-                ),
-                GButton(
-                  icon: LineIcons.user,
-                  text: 'Profile',
-                ),
-              ],
-              selectedIndex: 1,
-              onTabChange: (index) {
-                switch (index) {
-                  case 0:
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const FirstRoute()),
-                    );
-                    break;
-                  case 2:
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ThirdRoute()),
-                    );
-                    break;
-                  default:
-                    break;
+                          if (index < totalJEvents - 1) const Divider(),
+                        ],
+                      );
+                    },
+                  );
                 }
               },
+            ),
+          ),
+        ),
+        appBar: AppBar(
+          title: const Text('Second Route'),
+          automaticallyImplyLeading: false,
+        ),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 20,
+                color: Colors.black.withOpacity(.1),
+              )
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+              child: GNav(
+                rippleColor: Colors.grey[300]!,
+                hoverColor: Colors.grey[100]!,
+                gap: 8,
+                activeColor: Colors.black,
+                iconSize: 24,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                duration: const Duration(milliseconds: 400),
+                tabBackgroundColor: Colors.grey[100]!,
+                color: Colors.black,
+                tabs: const [
+                  GButton(
+                    icon: LineIcons.home,
+                    text: 'Home',
+                  ),
+                  GButton(
+                    icon: LineIcons.search,
+                    text: 'Search',
+                  ),
+                  GButton(
+                    icon: LineIcons.user,
+                    text: 'Profile',
+                  ),
+                ],
+                selectedIndex: 1,
+                onTabChange: (index) {
+                  switch (index) {
+                    case 0:
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const FirstRoute()),
+                      );
+                      break;
+                    case 2:
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ThirdRoute()),
+                      );
+                      break;
+                    default:
+                      break;
+                  }
+                },
+              ),
             ),
           ),
         ),
@@ -909,9 +892,9 @@ class SignUpFormState extends State<SignUpForm> {
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignInForm()),
-                    );
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignInForm()),
+                  );
                 }
               },
               child: const Text('Sign Up'),

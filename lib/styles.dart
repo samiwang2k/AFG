@@ -1,9 +1,8 @@
-import 'dart:js';
 import 'package:flutter/material.dart';
 
 const colorBlack = Color.fromRGBO(48, 47, 48, 1.0);
-const colorGray = Color.fromRGBO(141, 141, 141, 1.0);
-const colorWhite = Colors.white;
+const colorGray = Colors.red;
+const colorWhite = Colors.blue;
 
 const TextTheme textThemeDefault = TextTheme(
   displayLarge:
