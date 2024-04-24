@@ -43,6 +43,9 @@ dependencies:
   geolocator: ^10.1.1
 
   open_street_map_search_and_pick: ^0.1.1
+  calendar_date_picker2: ^0.5.5
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-const colorBlack = Colors.blue;
-const colorGray = Colors.red;
-const colorWhite = Colors.blue;
+const colorBlack = Colors.black;
+const colorGray = Colors.grey;
+const colorWhite = Colors.white;
 
 const TextTheme textThemeDefault = TextTheme(
   displayLarge:

@@ -12,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:geolocator/geolocator.dart';
 import 'styles.dart';
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 
 /// Determine the current position of the device.
 ///
@@ -249,8 +250,6 @@ class SecondRoute extends StatefulWidget {
   final List<String>? allHosts = [];
   final List<String>? allDates = [];
   final List<String>? allLocs = [];
-  double lat = 0;
-  double long = 0;
 
   @override
   SecondRouteState createState() => SecondRouteState();
@@ -269,12 +268,12 @@ class SecondRouteState extends State<SecondRoute> {
   double long = 0;
   void getPos() async {
     Position? currentPos = await _determinePosition();
-    if (kDebugMode) {
+    setState(() {
       lat = currentPos.latitude;
-      print(currentPos.latitude);
-    }
-    if (kDebugMode) {
       long = currentPos.longitude;
+    });
+    if (kDebugMode) {
+      print(currentPos.latitude);
       print(currentPos.longitude);
     }
   }
@@ -332,6 +331,7 @@ class SecondRouteState extends State<SecondRoute> {
           height: deviceHeight,
           // Set the height of the SizedBox
           child: Card(
+            color: Colors.white,
             margin: const EdgeInsets.all(10.0),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
@@ -355,7 +355,15 @@ class SecondRouteState extends State<SecondRoute> {
                         // Handle the case where the index is out of range, e.g., return a default widget
                         return const ListTile(
                           tileColor: Colors.white,
-                          title: Text('No more events'),
+                          title: Text(
+                            'No more events',
+                            style: TextStyle(
+                              color: Colors.blue, // Set text color (optional)
+                              fontSize: 16.0, // Set font size (optional)
+                              fontWeight:
+                                  FontWeight.w500, // Set font weight (optional)
+                            ),
+                          ),
                           subtitle: Text(''),
                         );
                       }
@@ -380,9 +388,13 @@ class SecondRouteState extends State<SecondRoute> {
                               }
                             },
                             child: ListTile(
+                              tileColor: Colors.white,
                               title: Text(widget.allJeventNames![index]),
                               subtitle: Text(
                                   '${widget.allHosts![index]},${widget.allDates![index]},${widget.allLocs![index]}'),
+                              textColor: Colors.black,
+                              trailing:
+                                  const Icon(Icons.arrow_forward_ios_rounded),
                             ),
                           ),
                           if (index < totalJEvents - 1) const Divider(),
@@ -498,6 +510,7 @@ class ThirdRouteState extends State<ThirdRoute> {
   String? host;
   String? place;
   bool _showTextFields = false;
+  String buttonText = "";
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -557,31 +570,51 @@ class ThirdRouteState extends State<ThirdRoute> {
                       return null;
                     },
                   ),
-                  TextFormField(
-                    controller: mc2,
-                    textInputAction: TextInputAction.next,
-                    onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                    onChanged: (val2) {
-                      setState(() {
-                        date = val2;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      hintText: 'Enter the date (mm/dd/yyyy)',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter the date';
+                  ElevatedButton(
+                    onPressed: () async {
+                      final DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (pickedDate != null) {
+                        setState(() {
+                          // Assuming you have a variable to hold the button text
+                          // Update it with the selected date
+                          buttonText = pickedDate.toString();
+                        });
                       }
-                      // Regular expression to match the date format 'mm/dd/yyyy'
-                      final RegExp dateFormat = RegExp(
-                          r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
-                      if (!dateFormat.hasMatch(value)) {
-                        return 'Please enter a valid date in the format mm/dd/yyyy';
-                      }
-                      return null;
                     },
+                    child: Text(
+                        buttonText), // Assuming buttonText is a variable holding the button text
                   ),
+
+                  // TextFormField(
+                  //   controller: mc2,
+                  //   textInputAction: TextInputAction.next,
+                  //   onEditingComplete: () => FocusScope.of(context).nextFocus(),
+                  //   onChanged: (val2) {
+                  //     setState(() {
+                  //       date = val2;
+                  //     });
+                  //   },
+                  //   decoration: const InputDecoration(
+                  //     hintText: 'Enter the date (mm/dd/yyyy)',
+                  //   ),
+                  //   validator: (value) {
+                  //     if (value == null || value.isEmpty) {
+                  //       return 'Please enter the date';
+                  //     }
+                  //     // Regular expression to match the date format 'mm/dd/yyyy'
+                  //     final RegExp dateFormat = RegExp(
+                  //         r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
+                  //     if (!dateFormat.hasMatch(value)) {
+                  //       return 'Please enter a valid date in the format mm/dd/yyyy';
+                  //     }
+                  //     return null;
+                  //   },
+                  // ),
                   ElevatedButton(
                       onPressed: () {
                         showDialog(
@@ -928,5 +961,32 @@ class SignUpFormState extends State<SignUpForm> {
         );
       }
     }
+  }
+}
+
+class CalendarPage extends StatefulWidget {
+  const CalendarPage({super.key});
+
+  @override
+  CalendarPageState createState() => CalendarPageState();
+}
+
+class CalendarPageState extends State<CalendarPage> {
+  List<DateTime> _dates = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Calendar Date Picker 2'),
+      ),
+      body: Center(
+        child: CalendarDatePicker2(
+          config: CalendarDatePicker2Config(),
+          value: _dates,
+          onValueChanged: (dates) => setState(() => _dates = _dates),
+        ),
+      ),
+    );
   }
 }
