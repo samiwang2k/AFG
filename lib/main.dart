@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
@@ -250,6 +252,8 @@ class SecondRoute extends StatefulWidget {
   final List<String>? allHosts = [];
   final List<String>? allDates = [];
   final List<String>? allLocs = [];
+  double lat=0;
+  double long=0;
 
   @override
   SecondRouteState createState() => SecondRouteState();
@@ -263,13 +267,16 @@ class SecondRouteState extends State<SecondRoute> {
 
     getAllEventData();
   }
-
+double lat=0;
+double long=0;
   void getPos() async {
     Position? currentPos = await _determinePosition();
     if (kDebugMode) {
+      lat=currentPos.latitude;
       print(currentPos.latitude);
     }
     if (kDebugMode) {
+      long=currentPos.longitude;
       print(currentPos.longitude);
     }
   }
@@ -301,9 +308,7 @@ class SecondRouteState extends State<SecondRoute> {
         widget.allJeventNames?.add(thingy['name']);
         widget.allHosts?.add(thingy['hostName']);
         widget.allDates?.add(thingy['date']);
-        if (kDebugMode) {
-          print(thingy['location']);
-        }
+        
         widget.allLocs
             ?.add('${thingy['location']['x']}, ${thingy['location']['y']}');
 
