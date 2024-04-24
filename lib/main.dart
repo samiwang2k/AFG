@@ -1,5 +1,3 @@
-// ignore_for_file: must_be_immutable
-
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
@@ -20,16 +18,17 @@ import 'styles.dart';
 /// When the location services are not enabled or permissions
 /// are denied the `Future` will return an error.
 Future<Position> _determinePosition() async {
-    LocationPermission permission;
-    permission = await Geolocator.requestPermission();
-    permission = await Geolocator.checkPermission();
-    permission = await Geolocator.requestPermission();
-    if( permission== LocationPermission.denied){
-         //nothing
-    }
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
-    return position;
+  LocationPermission permission;
+  permission = await Geolocator.requestPermission();
+  permission = await Geolocator.checkPermission();
+  permission = await Geolocator.requestPermission();
+  if (permission == LocationPermission.denied) {
+    //nothing
   }
+  Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.low);
+  return position;
+}
 
 final firestore = FirebaseFirestore.instance;
 
@@ -80,14 +79,12 @@ Future<void> main() async {
     runApp(const MaterialApp(
       title: 'AFG',
       home: FirstRoute(),
-      //theme: ThemeData(primaryColor: colorWhite, accentColor: colorGray, textTheme: width < 500 ? textThemeSmall : textThemeDefault, fontFamily: "Montserrat"),
     ));
   } else {
     // User is not signed in, show the SignInForm
     runApp(const MaterialApp(
       title: 'AFG',
       home: SignInForm(),
-      //theme: ThemeData(primaryColor: colorWhite, colorScheme: const ColorScheme.light(secondary: colorGray), textTheme: width < 500 ? textThemeSmall : textThemeDefault, fontFamily: "Montserrat"),
     ));
   }
 }
@@ -252,8 +249,8 @@ class SecondRoute extends StatefulWidget {
   final List<String>? allHosts = [];
   final List<String>? allDates = [];
   final List<String>? allLocs = [];
-  double lat=0;
-  double long=0;
+  double lat = 0;
+  double long = 0;
 
   @override
   SecondRouteState createState() => SecondRouteState();
@@ -267,16 +264,17 @@ class SecondRouteState extends State<SecondRoute> {
 
     getAllEventData();
   }
-double lat=0;
-double long=0;
+
+  double lat = 0;
+  double long = 0;
   void getPos() async {
     Position? currentPos = await _determinePosition();
     if (kDebugMode) {
-      lat=currentPos.latitude;
+      lat = currentPos.latitude;
       print(currentPos.latitude);
     }
     if (kDebugMode) {
-      long=currentPos.longitude;
+      long = currentPos.longitude;
       print(currentPos.longitude);
     }
   }
@@ -308,7 +306,7 @@ double long=0;
         widget.allJeventNames?.add(thingy['name']);
         widget.allHosts?.add(thingy['hostName']);
         widget.allDates?.add(thingy['date']);
-        
+
         widget.allLocs
             ?.add('${thingy['location']['x']}, ${thingy['location']['y']}');
 
@@ -332,9 +330,8 @@ double long=0;
         body: SizedBox(
           width: deviceWidth, // Set the width of the SizedBox
           height: deviceHeight,
-           // Set the height of the SizedBox
+          // Set the height of the SizedBox
           child: Card(
-            color: const Color.fromARGB(255, 255, 255, 255).withOpacity(1),
             margin: const EdgeInsets.all(10.0),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
@@ -357,6 +354,7 @@ double long=0;
                           index >= widget.allLocs!.length) {
                         // Handle the case where the index is out of range, e.g., return a default widget
                         return const ListTile(
+                          tileColor: Colors.white,
                           title: Text('No more events'),
                           subtitle: Text(''),
                         );
