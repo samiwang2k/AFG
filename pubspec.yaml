@@ -41,6 +41,7 @@ dependencies:
   line_icons: ^2.0.3
   url_launcher: ^6.2.1
   geolocator: ^10.1.1
+  intl: ^0.18.1
 
   open_street_map_search_and_pick: ^0.1.1
   calendar_date_picker2: ^0.5.5

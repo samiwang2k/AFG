@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
 import 'details.dart';
 import 'jevent.dart';
@@ -13,6 +14,9 @@ import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.
 import 'package:geolocator/geolocator.dart';
 import 'styles.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'dart:ui' as ui;
+
+
 
 /// Determine the current position of the device.
 ///
@@ -154,12 +158,14 @@ Future<void> readPoint() async {
 }
 
 void nav() => runApp(MaterialApp(
-      builder: (context, child) {
-        return Directionality(textDirection: TextDirection.ltr, child: child!);
-      },
-      title: 'GNav',
-      home: const FirstRoute(),
-    ));
+ title: 'GNav',
+ home: const FirstRoute(),
+ builder: (BuildContext context, Widget? child) {
+    // You can perform any additional setup here if needed
+    return child!;
+ },
+));
+
 
 class FirstRoute extends StatefulWidget {
   const FirstRoute({super.key});
@@ -571,24 +577,36 @@ class ThirdRouteState extends State<ThirdRoute> {
                     },
                   ),
                   ElevatedButton(
-                    onPressed: () async {
-                      final DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2100),
-                      );
-                      if (pickedDate != null) {
-                        setState(() {
-                          // Assuming you have a variable to hold the button text
-                          // Update it with the selected date
-                          buttonText = pickedDate.toString();
-                        });
-                      }
-                    },
-                    child: Text(
-                        buttonText), // Assuming buttonText is a variable holding the button text
-                  ),
+ onPressed: () async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate != null) {
+      // Format the picked date into MM/dd/yyyy format
+      final String formattedDate = DateFormat('MM/dd/yyyy').format(pickedDate);
+
+      // Validate the formatted date against the regular expression
+      final RegExp dateFormat = RegExp(r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
+      if (dateFormat.hasMatch(formattedDate)) {
+        // The date is valid, you can proceed with your logic
+        setState(() {
+          // Assuming you have a variable to hold the button text
+          // Update it with the selected date
+          buttonText = formattedDate;
+        });
+      } else {
+        // The date does not match the required format
+        // Handle this case as needed
+        print('Invalid date format');
+      }
+    }
+ },
+ child: Text(buttonText), // Assuming buttonText is a variable holding the button text
+),
+
 
                   // TextFormField(
                   //   controller: mc2,
@@ -633,7 +651,7 @@ class ThirdRouteState extends State<ThirdRoute> {
                                     print(pickedData.latLong.longitude);
                                   }
                                   if (kDebugMode) {
-                                    print(pickedData.address);
+                                    print(pickedData.addressName);
                                   }
                                   place =
                                       '${pickedData.latLong.latitude},${pickedData.latLong.longitude}';
@@ -681,10 +699,10 @@ class ThirdRouteState extends State<ThirdRoute> {
                       final RegExp dateFormat = RegExp(
                           r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
                       // Check if the date matches the format
-                      if (dateFormat.hasMatch(date!)) {
+                      if (dateFormat.hasMatch(buttonText!)) {
                         newEvent = Jevent(
                           name: name,
-                          date: date,
+                          date: buttonText,
                           location: createPoint(
                               place!), // Assuming createPoint is a function that converts 'place' to a Point object
                           hostName: host,
