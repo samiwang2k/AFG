@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:geocoding/geocoding.dart';
 
-class DetailPage extends StatelessWidget {
+abstract class DetailPage extends StatelessWidget {
   final String title;
   final String date;
   final String location;
@@ -16,7 +17,7 @@ class DetailPage extends StatelessWidget {
     }
   }
 
-  const DetailPage(
+   const DetailPage(
       {super.key,
       required this.title,
       required this.date,
@@ -79,4 +80,51 @@ class DetailPage extends StatelessWidget {
       ),
     );
   }
-}
+
+  Future<String> getPlacemarks(double lat, double long) async {
+    
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, long);
+
+      var address = '';
+
+      if (placemarks.isNotEmpty) {
+        // Concatenate non-null components of the address
+        var streets = placemarks.reversed
+            .map((placemark) => placemark.street)
+            .where((street) => street != null);
+
+        // Filter out unwanted parts
+        streets = streets.where((street) =>
+            street!.toLowerCase() !=
+            placemarks.reversed.last.locality!
+                .toLowerCase()); // Remove city names
+        streets = streets
+            .where((street) => !street!.contains('+')); // Remove street codes
+
+        address += streets.join(', ');
+
+        address += ', ${placemarks.reversed.last.subLocality ?? ''}';
+        address += ', ${placemarks.reversed.last.locality ?? ''}';
+        address += ', ${placemarks.reversed.last.subAdministrativeArea ?? ''}';
+        address += ', ${placemarks.reversed.last.administrativeArea ?? ''}';
+        address += ', ${placemarks.reversed.last.postalCode ?? ''}';
+        address += ', ${placemarks.reversed.last.country ?? ''}';
+      }
+
+      
+
+      return address;
+    }
+  }
+   List<String> parts = location.split(',');
+
+
+ // Try to parse the latitude and longitude
+ double? lat = double.tryParse(parts[0]);
+ double? lon = double.tryParse(parts[1]);
+
+ // Check if parsing was successful
+ 
+
+ // Call getPlacemarks with the parsed latitude and longitude
+ print(getPlacemarks(lat, lon));

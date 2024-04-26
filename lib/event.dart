@@ -1,5 +1,4 @@
 // ignore_for_file: unnecessary_getters_setters
-
 import 'point.dart';
 import 'dart:core';
 
@@ -47,11 +46,12 @@ class Jevent {
   set hostName(String? value) {
     _hostName = value;
   }
-  @override
-  String toString(){
-    return 'The event name is $name. It is being run by $hostName on $date at $location';
 
+  @override
+  String toString() {
+    return 'The event name is $name. It is being run by $hostName on $date at $location';
   }
+
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -60,5 +60,4 @@ class Jevent {
       'hostName': hostName,
     };
   }
-  
 }

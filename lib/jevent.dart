@@ -1,5 +1,4 @@
 // ignore_for_file: unnecessary_getters_setters
-
 import 'point.dart';
 import 'dart:core';
 

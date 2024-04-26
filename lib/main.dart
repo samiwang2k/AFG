@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
 import 'details.dart';
 import 'jevent.dart';
 import 'point.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'styles.dart';
 import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:geolocator/geolocator.dart';
-import 'styles.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'dart:ui' as ui;
-
-
 
 /// Determine the current position of the device.
 ///
@@ -158,14 +156,13 @@ Future<void> readPoint() async {
 }
 
 void nav() => runApp(MaterialApp(
- title: 'GNav',
- home: const FirstRoute(),
- builder: (BuildContext context, Widget? child) {
-    // You can perform any additional setup here if needed
-    return child!;
- },
-));
-
+      title: 'GNav',
+      home: const FirstRoute(),
+      builder: (BuildContext context, Widget? child) {
+        // You can perform any additional setup here if needed
+        return child!;
+      },
+    ));
 
 class FirstRoute extends StatefulWidget {
   const FirstRoute({super.key});
@@ -181,7 +178,7 @@ class FirstRouteState extends State<FirstRoute> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('First Route'),
+        title: const Text('Home Page'),
         automaticallyImplyLeading: false,
       ),
       bottomNavigationBar: Container(
@@ -326,10 +323,9 @@ class SecondRouteState extends State<SecondRoute> {
     double deviceHeight = MediaQuery.of(context).size.height;
     return Theme(
       data: ThemeData(
-        primaryColor: colorWhite,
+        primaryColor: Colors.white,
         colorScheme: const ColorScheme.light(secondary: colorGray),
         textTheme: deviceWidth < 5000 ? textThemeSmall : textThemeDefault,
-        fontFamily: "Montserrat",
       ),
       child: Scaffold(
         body: SizedBox(
@@ -364,13 +360,21 @@ class SecondRouteState extends State<SecondRoute> {
                           title: Text(
                             'No more events',
                             style: TextStyle(
-                              color: Colors.blue, // Set text color (optional)
+                              color: Colors.black, // Set text color (optional)
                               fontSize: 16.0, // Set font size (optional)
                               fontWeight:
                                   FontWeight.w500, // Set font weight (optional)
                             ),
                           ),
-                          subtitle: Text(''),
+                          subtitle: Text(
+                            '',
+                            style: TextStyle(
+                              color: Colors.black, // Set text color (optional)
+                              fontSize: 16.0, // Set font size (optional)
+                              fontWeight:
+                                  FontWeight.w500, // Set font weight (optional)
+                            ),
+                          ),
                         );
                       }
 
@@ -393,14 +397,17 @@ class SecondRouteState extends State<SecondRoute> {
                                 print('ListTile tapped');
                               }
                             },
-                            child: ListTile(
-                              tileColor: Colors.white,
-                              title: Text(widget.allJeventNames![index]),
-                              subtitle: Text(
-                                  '${widget.allHosts![index]},${widget.allDates![index]},${widget.allLocs![index]}'),
-                              textColor: Colors.black,
-                              trailing:
-                                  const Icon(Icons.arrow_forward_ios_rounded),
+                            child: Container(
+                              color: Colors.white,
+                              child: ListTile(
+                                tileColor: Colors.white,
+                                title: Text(widget.allJeventNames![index]),
+                                subtitle: Text(
+                                    '${widget.allHosts![index]},${widget.allDates![index]},${widget.allLocs![index]}'),
+                                textColor: Colors.black,
+                                trailing:
+                                    const Icon(Icons.arrow_forward_ios_rounded),
+                              ),
                             ),
                           ),
                           if (index < totalJEvents - 1) const Divider(),
@@ -533,7 +540,7 @@ class ThirdRouteState extends State<ThirdRoute> {
               _showTextFields = true;
             });
           },
-          child: const Text('Please!',
+          child: const Text('Create Event',
               style: TextStyle(color: Color.fromARGB(255, 0, 0, 0))),
         ),
         ElevatedButton(
@@ -577,36 +584,40 @@ class ThirdRouteState extends State<ThirdRoute> {
                     },
                   ),
                   ElevatedButton(
- onPressed: () async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (pickedDate != null) {
-      // Format the picked date into MM/dd/yyyy format
-      final String formattedDate = DateFormat('MM/dd/yyyy').format(pickedDate);
+                    onPressed: () async {
+                      final DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (pickedDate != null) {
+                        // Format the picked date into MM/dd/yyyy format
+                        final String formattedDate =
+                            DateFormat('MM/dd/yyyy').format(pickedDate);
 
-      // Validate the formatted date against the regular expression
-      final RegExp dateFormat = RegExp(r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
-      if (dateFormat.hasMatch(formattedDate)) {
-        // The date is valid, you can proceed with your logic
-        setState(() {
-          // Assuming you have a variable to hold the button text
-          // Update it with the selected date
-          buttonText = formattedDate;
-        });
-      } else {
-        // The date does not match the required format
-        // Handle this case as needed
-        print('Invalid date format');
-      }
-    }
- },
- child: Text(buttonText), // Assuming buttonText is a variable holding the button text
-),
-
+                        // Validate the formatted date against the regular expression
+                        final RegExp dateFormat = RegExp(
+                            r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
+                        if (dateFormat.hasMatch(formattedDate)) {
+                          // The date is valid, you can proceed with your logic
+                          setState(() {
+                            // Assuming you have a variable to hold the button text
+                            // Update it with the selected date
+                            buttonText = formattedDate;
+                          });
+                        } else {
+                          // The date does not match the required format
+                          // Handle this case as needed
+                          if (kDebugMode) {
+                            print('Invalid date format');
+                          }
+                        }
+                      }
+                    },
+                    child: Text(
+                        buttonText), // Assuming buttonText is a variable holding the button text
+                  ),
 
                   // TextFormField(
                   //   controller: mc2,
@@ -699,7 +710,7 @@ class ThirdRouteState extends State<ThirdRoute> {
                       final RegExp dateFormat = RegExp(
                           r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
                       // Check if the date matches the format
-                      if (dateFormat.hasMatch(buttonText!)) {
+                      if (dateFormat.hasMatch(buttonText)) {
                         newEvent = Jevent(
                           name: name,
                           date: buttonText,
