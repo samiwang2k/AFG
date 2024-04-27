@@ -14,7 +14,7 @@ import 'firebase_options.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
-import 'dart:ui' as ui;
+//import 'dart:ui' as ui;
 
 /// Determine the current position of the device.
 ///
@@ -657,11 +657,7 @@ class ThirdRouteState extends State<ThirdRoute> {
                                 onPicked: (pickedData) {
                                   if (kDebugMode) {
                                     print(pickedData.latLong.latitude);
-                                  }
-                                  if (kDebugMode) {
                                     print(pickedData.latLong.longitude);
-                                  }
-                                  if (kDebugMode) {
                                     print(pickedData.addressName);
                                   }
                                   place =
