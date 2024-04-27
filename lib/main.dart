@@ -152,7 +152,7 @@ Future<void> addPoint(Point point) async {
   await firestore.collection('points').add(pointMap);
 }
 
-Future<void> addEvent(Jevent jevent) async {
+Future<void> addEvent(Jevent jevent, {File? imageFile}) async {
   String userId = FirebaseAuth.instance.currentUser!.uid;
   DocumentReference userDocRef = firestore.collection('users').doc(userId);
 
@@ -162,26 +162,37 @@ Future<void> addEvent(Jevent jevent) async {
   // Check if the user's document exists and has an events array
   if (userDocSnapshot.exists &&
       (userDocSnapshot.data() as Map<String, dynamic>).containsKey('events')) {
-    // If the events array exists, append the new event
+    // If the events array exists, handle image upload (if provided)
+    if (imageFile != null) {
+      String imageUrl = await uploadImage(imageFile);
+      jevent.imageUrl = imageUrl;
+    }
     await userDocRef.update({
       'events': FieldValue.arrayUnion([jevent.toMap()]),
     });
   } else {
     // If the events array does not exist, create it with the new event
+    if (imageFile != null) {
+      String imageUrl = await uploadImage(imageFile);
+      jevent.imageUrl = imageUrl;
+    }
     await userDocRef.set({
       'events': [jevent.toMap()],
     }, SetOptions(merge: true)); // Use merge to avoid overwriting other fields
   }
 }
 
-Future<void> readPoint() async {
-  await firestore.collection('points').get().then((event) {
-    Map<String, dynamic> data = event.docs.last.data();
-    Point pt = Point.defined(data['x'], data['y']);
-    if (kDebugMode) {
-      print(pt);
-    }
-  });
+// Helper function to upload image to Firebase Storage
+Future<String> uploadImage(File imageFile) async {
+  final bytes = imageFile.readAsBytesSync();
+  var timestamp = DateTime.now();
+  final metadata = SettableMetadata(contentType: 'image/jpeg');
+  UploadTask task = FirebaseStorage.instance
+      .ref('EventImages/$timestamp/${imageFile.path.split('/').last}')
+      .putData(bytes, metadata);
+  TaskSnapshot downloadUrlSnapshot = await task;
+  String imageUrl = await downloadUrlSnapshot.ref.getDownloadURL();
+  return imageUrl;
 }
 
 void nav() => runApp(MaterialApp(
@@ -597,11 +608,11 @@ class ThirdRouteState extends State<ThirdRoute> {
         ),
         if (_showTextFields) // Correctly placed conditional rendering
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(0),
             child: Form(
               key:
-                  _formKey, // Assuming _formKey is defined as GlobalKey<FormState>
-              child: Column(
+                  _formKey,  // Assuming _formKey is defined as GlobalKey<FormState>
+              child: SingleChildScrollView(child: Column(
                 children: [
                   TextFormField(
                     controller: mc1,
@@ -737,59 +748,55 @@ class ThirdRouteState extends State<ThirdRoute> {
                     },
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // Your existing code for handling the form submission
-                        // For example, navigating to another screen or saving the data
-                      }
-                      final RegExp dateFormat = RegExp(
-                          r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
-                      // Check if the date matches the format
-                      if (dateFormat.hasMatch(buttonText)) {
-                        newEvent = Jevent(
-                          name: name,
-                          date: buttonText,
-                          location: createPoint(
-                              place!), // Assuming createPoint is a function that converts 'place' to a Point object
-                          hostName: host,
-                        );
-                        _showTextFields = false;
-                        if (kDebugMode) {
-                          print(newEvent);
-                        }
-                        String userId = FirebaseAuth
-                            .instance.currentUser!.uid; // Get the user ID
-                        if (kDebugMode) {
-                          print('User ID: $userId');
-                        } // Print the user ID
-                        addEvent(newEvent!);
-                      } else {
-                        // Show an error message or handle the invalid date format
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text(
-                                  'Please enter a valid date in the format mm/dd/yyyy')),
-                        );
-                      }
-                    },
-                    child: const Text('confirm'),
-                  ),
-                  ElevatedButton(
                     onPressed: _pickImage,
-                    child: const Text('wow'),
+                    child: const Text('Pick Image'),
                   ),
                   if (_pickedImage != null)
                     Image.file(
-                  
                       _pickedImage!,
                       fit: BoxFit.cover,
                       height: 200, // Adjust the height as needed
                     ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        // Check if an image is selected
+                        if (_pickedImage != null) {
+                          // Upload the image and get the URL
+                          String imageUrl = await uploadImage(_pickedImage!);
+                          // Create the Jevent object with the image URL
+                          final newEvent = Jevent(
+                            name: name,
+                            date: buttonText,
+                            location: createPoint(
+                                place!), // Assuming createPoint can handle a default value
+                            hostName: host,
+                            imageUrl: imageUrl,
+                          );
+                          addEvent(newEvent);
+                          // Reset form and image selection
+                          _formKey.currentState!.reset();
+                          setState(() {
+                            _pickedImage = null;
+                          });
+                        } else {
+                          // Show error message if no image selected
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Please select an image for the event'),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    child: const Text('Create Event'),
+                  ),
                 ],
               ),
             ),
           )
-      ]),
+    )]),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
