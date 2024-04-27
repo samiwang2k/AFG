@@ -15,6 +15,10 @@ import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.
 import 'package:geolocator/geolocator.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'dart:ui' as ui;
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 
 /// Determine the current position of the device.
 ///
@@ -103,7 +107,7 @@ Point? createPoint(String inputted) {
   return null;
 }
 
-String createEvent(String textyInput) {
+Future<String> createEvent(String textyInput, File imageFile) async {
   List<String> jevents = textyInput.split('#');
   Jevent jevent = Jevent(
     name: jevents[0],
@@ -112,9 +116,34 @@ String createEvent(String textyInput) {
         jevents[2]), // Assuming createPoint can handle a default value
     hostName: jevents.last,
   );
+
+  // Upload the image to Firebase Storage
+  final bytes = imageFile.readAsBytesSync();
+  var timestamp = DateTime.now();
+  final metadata = SettableMetadata(contentType: 'image/jpeg');
+  UploadTask task = FirebaseStorage.instance
+      .ref('EventImages/$timestamp/${imageFile.path.split('/').last}')
+      .putData(bytes, metadata);
+  TaskSnapshot downloadUrlSnapshot = await task;
+
+  // Get the download URL of the uploaded image
+  String imageUrl = await downloadUrlSnapshot.ref.getDownloadURL();
+  jevent.imageUrl = imageUrl; // Set the image URL in the Jevent object
+
   if (kDebugMode) {
     print(jevent);
   }
+
+  // Save the event details to Firestore
+  CollectionReference events = FirebaseFirestore.instance.collection('events');
+  await events.add({
+    'name': jevent.name,
+    'date': jevent.date,
+    'location': jevent.location?.toMap(),
+    'hostName': jevent.hostName,
+    'imageUrl': jevent.imageUrl, // Save the image URL
+  });
+
   return jevent.toString();
 }
 
@@ -506,9 +535,19 @@ class ThirdRouteState extends State<ThirdRoute> {
   TextEditingController mc2 = TextEditingController();
   TextEditingController mc3 = TextEditingController();
   TextEditingController mc4 = TextEditingController();
-
+  File? _pickedImage;
   String userInput = '';
   Point? point;
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _pickedImage = File(image.path);
+      });
+    }
+  }
 
   void printUserInput() {
     if (kDebugMode) {
@@ -738,7 +777,18 @@ class ThirdRouteState extends State<ThirdRoute> {
                       }
                     },
                     child: const Text('confirm'),
-                  )
+                  ),
+                  ElevatedButton(
+                    onPressed: _pickImage,
+                    child: const Text('wow'),
+                  ),
+                  if (_pickedImage != null)
+                    Image.file(
+                  
+                      _pickedImage!,
+                      fit: BoxFit.cover,
+                      height: 200, // Adjust the height as needed
+                    ),
                 ],
               ),
             ),
