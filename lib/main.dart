@@ -696,11 +696,7 @@ class ThirdRouteState extends State<ThirdRoute> {
                                 onPicked: (pickedData) {
                                   if (kDebugMode) {
                                     print(pickedData.latLong.latitude);
-                                  }
-                                  if (kDebugMode) {
                                     print(pickedData.latLong.longitude);
-                                  }
-                                  if (kDebugMode) {
                                     print(pickedData.addressName);
                                   }
                                   place =

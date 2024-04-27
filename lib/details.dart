@@ -1,25 +1,32 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geocoding/geocoding.dart';
 
 class DetailPage extends StatelessWidget {
- final String title;
- final String date;
- final String location;
- final String hostName;
+  final String title;
+  final String date;
+  final String location;
+  final String hostName;
 
- const DetailPage({Key? key, required this.title, required this.date, required this.location, required this.hostName}) : super(key: key);
+  const DetailPage(
+      {super.key,
+      required this.title,
+      required this.date,
+      required this.location,
+      required this.hostName});
 
- void _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+  void _launchURL(String url) async {
+    Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
     } else {
       throw 'Could not launch $url';
     }
- }
+  }
 
- @override
- Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Event Details'),
@@ -34,7 +41,8 @@ class DetailPage extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+              style:
+                  const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -52,21 +60,20 @@ class DetailPage extends StatelessWidget {
               onTap: () {
                 _launchURL(
                     'https://www.google.com/maps/search/?api=1&query=${location.split(',')[0]}+${location.split(',')[1]}');
-                     // Replace with your desired URL
-                
+                // Replace with your desired URL
               },
               child: Container(
                 padding: const EdgeInsets.all(12.0),
                 decoration: BoxDecoration(
-                 color: Colors.blue,
-                 borderRadius: BorderRadius.circular(8.0),
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: const Text(
-                 'Visit address',
-                 style: TextStyle(
+                  'Visit address',
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 16.0,
-                 ),
+                  ),
                 ),
               ),
             )
@@ -74,9 +81,9 @@ class DetailPage extends StatelessWidget {
         ),
       ),
     );
- }
+  }
 
- Future<String> getPlacemarks(String location) async {
+  Future<String> getPlacemarks(String location) async {
     List<String> parts = location.split(',');
     double? lat = double.tryParse(parts[0]);
     double? lon = double.tryParse(parts[1]);
@@ -106,12 +113,13 @@ class DetailPage extends StatelessWidget {
         address += ', ${placemarks.reversed.last.postalCode ?? ''}';
         address += ', ${placemarks.reversed.last.country ?? ''}';
       }
-      print(address);
+      if (kDebugMode) {
+        print(address);
+      }
 
       return address;
-      
     } else {
       throw 'Invalid location format';
     }
- }
+  }
 }
