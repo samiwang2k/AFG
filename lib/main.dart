@@ -293,6 +293,7 @@ class SecondRoute extends StatefulWidget {
   final List<String>? allHosts = [];
   final List<String>? allDates = [];
   final List<String>? allLocs = [];
+  final List<String>? allUrls=[];
 
   @override
   SecondRouteState createState() => SecondRouteState();
@@ -351,6 +352,7 @@ class SecondRouteState extends State<SecondRoute> {
 
         widget.allLocs
             ?.add('${thingy['location']['x']}, ${thingy['location']['y']}');
+        widget.allUrls?.add('${thingy['imageUrl']}');
 
         // Use widget.allJeventNames to access the allJeventNames list
       }
@@ -430,7 +432,7 @@ class SecondRouteState extends State<SecondRoute> {
                                         title: widget.allJeventNames![index],
                                         hostName: widget.allHosts![index],
                                         date: widget.allDates![index],
-                                        location: widget.allLocs![index])),
+                                        location: widget.allLocs![index],imageUrl: widget.allUrls![index],)),
                               );
                               // Handle the tap event here
                               if (kDebugMode) {

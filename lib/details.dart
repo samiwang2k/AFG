@@ -10,13 +10,15 @@ class DetailPage extends StatelessWidget {
   final String date;
   final String location;
   final String hostName;
+  final String imageUrl;
 
   const DetailPage(
       {super.key,
       required this.title,
       required this.date,
       required this.location,
-      required this.hostName});
+      required this.hostName,
+      required this.imageUrl});
 
 void _launchURL(String url) async {
  // Remove spaces from the URL string
@@ -86,7 +88,10 @@ void _launchURL(String url) async {
                   ),
                 ),
               ),
-            )
+            ),Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Image.network(imageUrl),
+            ),
           ],
         ),
       ),
