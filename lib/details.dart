@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -16,14 +18,22 @@ class DetailPage extends StatelessWidget {
       required this.location,
       required this.hostName});
 
-  void _launchURL(String url) async {
-    Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
+void _launchURL(String url) async {
+ // Remove spaces from the URL string
+ String urlWithoutSpaces = url.replaceAll(' ', '');
+
+ // Parse the URL string into a Uri object
+ var uri = Uri.parse(urlWithoutSpaces);
+
+ if (await canLaunch(uri.toString())) {
+    await launch(uri.toString());
+ } else {
+    throw 'Could not launch $urlWithoutSpaces';
+ }
+}
+
+
+
 
   @override
   Widget build(BuildContext context) {
