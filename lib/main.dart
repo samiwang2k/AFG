@@ -14,10 +14,8 @@ import 'firebase_options.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
-import 'dart:ui' as ui;
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:great_circle_distance_calculator/great_circle_distance_calculator.dart';
 
@@ -366,21 +364,22 @@ class SecondRouteState extends State<SecondRoute> {
         final lat2 = thingy['location']['x'];
         final lon2 = thingy['location']['y'];
 
-        var gcd = new GreatCircleDistance.fromDegrees(
+        var gcd = GreatCircleDistance.fromDegrees(
             latitude1: lat1,
             longitude1: lon1,
             latitude2: lat2,
             longitude2: lon2);
         widget.distances.add(gcd.haversineDistance());
 
-        print(widget.distances);
+        if (kDebugMode) {
+          print(widget.distances);
+        }
 
         // Use widget.allJeventNames to access the allJeventNames list
       }
       List<double> sortedDistances = List.from(widget.distances)..sort();
 
 // Step 3: Reorder other lists based on sorted distances
-
 
       for (int i = 0; i < sortedDistances.length; i++) {
         int index = widget.distances.indexOf(sortedDistances[i]);
@@ -463,11 +462,12 @@ class SecondRouteState extends State<SecondRoute> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => DetailPage(
-                                          title: widget.sortedJeventNames![index],
-                                          hostName: widget.sortedHosts![index],
-                                          date: widget.sortedDates![index],
-                                          location: widget.sortedLocs![index],
-                                          imageUrl: widget.sortedUrls![index],
+                                          title:
+                                              widget.sortedJeventNames[index],
+                                          hostName: widget.sortedHosts[index],
+                                          date: widget.sortedDates[index],
+                                          location: widget.sortedLocs[index],
+                                          imageUrl: widget.sortedUrls[index],
                                         )),
                               );
                               // Handle the tap event here
@@ -476,12 +476,13 @@ class SecondRouteState extends State<SecondRoute> {
                               }
                             },
                             child: Container(
+                              height: 400.0,
                               color: Colors.white,
                               child: ListTile(
                                 tileColor: Colors.white,
                                 title: Text(widget.allJeventNames![index]),
                                 subtitle: Text(
-                                    '${widget.sortedHosts![index]},${widget.sortedDates![index]},${widget.sortedLocs![index]}'),
+                                    '${widget.sortedHosts[index]},${widget.sortedDates[index]},${widget.sortedLocs[index]}'),
                                 textColor: Colors.black,
                                 trailing:
                                     const Icon(Icons.arrow_forward_ios_rounded),
@@ -588,8 +589,8 @@ class ThirdRouteState extends State<ThirdRoute> {
   String userInput = '';
   Point? point;
   Future<void> _pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       setState(() {
@@ -1065,27 +1066,27 @@ class SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  void _signUp() async {
-    String? userId = await signUpWithEmailPassword(
-      _emailController.text,
-      _passwordController.text,
-    );
-    if (userId != null) {
-      // Sign-up successful, navigate to the main content
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const FirstRoute()),
-        );
-      }
-    } else {
-      if (mounted) {
-        // Sign-up failed, show an error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sign-up failed')),
-        );
-      }
-    }
-  }
+  // void _signUp() async {
+  //   String? userId = await signUpWithEmailPassword(
+  //     _emailController.text,
+  //     _passwordController.text,
+  //   );
+  //   if (userId != null) {
+  //     // Sign-up successful, navigate to the main content
+  //     if (mounted) {
+  //       Navigator.of(context).pushReplacement(
+  //         MaterialPageRoute(builder: (context) => const FirstRoute()),
+  //       );
+  //     }
+  //   } else {
+  //     if (mounted) {
+  //       // Sign-up failed, show an error message
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('Sign-up failed')),
+  //       );
+  //     }
+  //   }
+  // }
 }
 
 class CalendarPage extends StatefulWidget {
