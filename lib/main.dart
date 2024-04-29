@@ -19,6 +19,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:great_circle_distance_calculator/great_circle_distance_calculator.dart';
 
 /// Determine the current position of the device.
 ///
@@ -293,7 +294,13 @@ class SecondRoute extends StatefulWidget {
   final List<String>? allHosts = [];
   final List<String>? allDates = [];
   final List<String>? allLocs = [];
-  final List<String>? allUrls=[];
+  final List<String>? allUrls = [];
+  final List<String> sortedJeventNames = [];
+  final List<String> sortedHosts = [];
+  final List<String> sortedDates = [];
+  final List<String> sortedLocs = [];
+  final List<String> sortedUrls = [];
+  final distances = [];
 
   @override
   SecondRouteState createState() => SecondRouteState();
@@ -353,8 +360,35 @@ class SecondRouteState extends State<SecondRoute> {
         widget.allLocs
             ?.add('${thingy['location']['x']}, ${thingy['location']['y']}');
         widget.allUrls?.add('${thingy['imageUrl']}');
+        final lat1 = lat;
+        final lon1 = long;
+
+        final lat2 = thingy['location']['x'];
+        final lon2 = thingy['location']['y'];
+
+        var gcd = new GreatCircleDistance.fromDegrees(
+            latitude1: lat1,
+            longitude1: lon1,
+            latitude2: lat2,
+            longitude2: lon2);
+        widget.distances.add(gcd.haversineDistance());
+
+        print(widget.distances);
 
         // Use widget.allJeventNames to access the allJeventNames list
+      }
+      List<double> sortedDistances = List.from(widget.distances)..sort();
+
+// Step 3: Reorder other lists based on sorted distances
+
+
+      for (int i = 0; i < sortedDistances.length; i++) {
+        int index = widget.distances.indexOf(sortedDistances[i]);
+        widget.sortedJeventNames.add(widget.allJeventNames![index]);
+        widget.sortedHosts.add(widget.allHosts![index]);
+        widget.sortedDates.add(widget.allDates![index]);
+        widget.sortedLocs.add(widget.allLocs![index]);
+        widget.sortedUrls.add(widget.allUrls![index]);
       }
     }
   }
@@ -429,10 +463,12 @@ class SecondRouteState extends State<SecondRoute> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => DetailPage(
-                                        title: widget.allJeventNames![index],
-                                        hostName: widget.allHosts![index],
-                                        date: widget.allDates![index],
-                                        location: widget.allLocs![index],imageUrl: widget.allUrls![index],)),
+                                          title: widget.sortedJeventNames![index],
+                                          hostName: widget.sortedHosts![index],
+                                          date: widget.sortedDates![index],
+                                          location: widget.sortedLocs![index],
+                                          imageUrl: widget.sortedUrls![index],
+                                        )),
                               );
                               // Handle the tap event here
                               if (kDebugMode) {
@@ -445,7 +481,7 @@ class SecondRouteState extends State<SecondRoute> {
                                 tileColor: Colors.white,
                                 title: Text(widget.allJeventNames![index]),
                                 subtitle: Text(
-                                    '${widget.allHosts![index]},${widget.allDates![index]},${widget.allLocs![index]}'),
+                                    '${widget.sortedHosts![index]},${widget.sortedDates![index]},${widget.sortedLocs![index]}'),
                                 textColor: Colors.black,
                                 trailing:
                                     const Icon(Icons.arrow_forward_ios_rounded),
@@ -610,195 +646,199 @@ class ThirdRouteState extends State<ThirdRoute> {
         ),
         if (_showTextFields) // Correctly placed conditional rendering
           Padding(
-            padding: const EdgeInsets.all(0),
-            child: Form(
-              key:
-                  _formKey,  // Assuming _formKey is defined as GlobalKey<FormState>
-              child: SingleChildScrollView(child: Column(
-                children: [
-                  TextFormField(
-                    controller: mc1,
-                    textInputAction: TextInputAction.next,
-                    onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                    onChanged: (val1) {
-                      setState(() {
-                        name = val1;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      hintText: 'Enter your name',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your name';
-                      }
-                      return null;
-                    },
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2100),
-                      );
-                      if (pickedDate != null) {
-                        // Format the picked date into MM/dd/yyyy format
-                        final String formattedDate =
-                            DateFormat('MM/dd/yyyy').format(pickedDate);
-
-                        // Validate the formatted date against the regular expression
-                        final RegExp dateFormat = RegExp(
-                            r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
-                        if (dateFormat.hasMatch(formattedDate)) {
-                          // The date is valid, you can proceed with your logic
+              padding: const EdgeInsets.all(0),
+              child: Form(
+                key:
+                    _formKey, // Assuming _formKey is defined as GlobalKey<FormState>
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: mc1,
+                        textInputAction: TextInputAction.next,
+                        onEditingComplete: () =>
+                            FocusScope.of(context).nextFocus(),
+                        onChanged: (val1) {
                           setState(() {
-                            // Assuming you have a variable to hold the button text
-                            // Update it with the selected date
-                            buttonText = formattedDate;
+                            name = val1;
                           });
-                        } else {
-                          // The date does not match the required format
-                          // Handle this case as needed
-                          if (kDebugMode) {
-                            print('Invalid date format');
+                        },
+                        decoration: const InputDecoration(
+                          hintText: 'Enter your name',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your name';
                           }
-                        }
-                      }
-                    },
-                    child: Text(
-                        buttonText), // Assuming buttonText is a variable holding the button text
-                  ),
+                          return null;
+                        },
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          final DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                          );
+                          if (pickedDate != null) {
+                            // Format the picked date into MM/dd/yyyy format
+                            final String formattedDate =
+                                DateFormat('MM/dd/yyyy').format(pickedDate);
 
-                  // TextFormField(
-                  //   controller: mc2,
-                  //   textInputAction: TextInputAction.next,
-                  //   onEditingComplete: () => FocusScope.of(context).nextFocus(),
-                  //   onChanged: (val2) {
-                  //     setState(() {
-                  //       date = val2;
-                  //     });
-                  //   },
-                  //   decoration: const InputDecoration(
-                  //     hintText: 'Enter the date (mm/dd/yyyy)',
-                  //   ),
-                  //   validator: (value) {
-                  //     if (value == null || value.isEmpty) {
-                  //       return 'Please enter the date';
-                  //     }
-                  //     // Regular expression to match the date format 'mm/dd/yyyy'
-                  //     final RegExp dateFormat = RegExp(
-                  //         r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
-                  //     if (!dateFormat.hasMatch(value)) {
-                  //       return 'Please enter a valid date in the format mm/dd/yyyy';
-                  //     }
-                  //     return null;
-                  //   },
-                  // ),
-                  ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Select Location'),
-                              content: OpenStreetMapSearchAndPick(
-                                buttonColor: Colors.blue,
-                                buttonText: 'Set Current Location',
-                                onPicked: (pickedData) {
-                                  if (kDebugMode) {
-                                    print(pickedData.latLong.latitude);
-                                    print(pickedData.latLong.longitude);
-                                    print(pickedData.addressName);
-                                  }
-                                  place =
-                                      '${pickedData.latLong.latitude},${pickedData.latLong.longitude}';
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('Close'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
+                            // Validate the formatted date against the regular expression
+                            final RegExp dateFormat = RegExp(
+                                r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
+                            if (dateFormat.hasMatch(formattedDate)) {
+                              // The date is valid, you can proceed with your logic
+                              setState(() {
+                                // Assuming you have a variable to hold the button text
+                                // Update it with the selected date
+                                buttonText = formattedDate;
+                              });
+                            } else {
+                              // The date does not match the required format
+                              // Handle this case as needed
+                              if (kDebugMode) {
+                                print('Invalid date format');
+                              }
+                            }
+                          }
+                        },
+                        child: Text(
+                            buttonText), // Assuming buttonText is a variable holding the button text
+                      ),
+
+                      // TextFormField(
+                      //   controller: mc2,
+                      //   textInputAction: TextInputAction.next,
+                      //   onEditingComplete: () => FocusScope.of(context).nextFocus(),
+                      //   onChanged: (val2) {
+                      //     setState(() {
+                      //       date = val2;
+                      //     });
+                      //   },
+                      //   decoration: const InputDecoration(
+                      //     hintText: 'Enter the date (mm/dd/yyyy)',
+                      //   ),
+                      //   validator: (value) {
+                      //     if (value == null || value.isEmpty) {
+                      //       return 'Please enter the date';
+                      //     }
+                      //     // Regular expression to match the date format 'mm/dd/yyyy'
+                      //     final RegExp dateFormat = RegExp(
+                      //         r'^(0[1-9]|1[0-2])/(0[1-9]|1\d|2\d|3[01])/(\d{4})$');
+                      //     if (!dateFormat.hasMatch(value)) {
+                      //       return 'Please enter a valid date in the format mm/dd/yyyy';
+                      //     }
+                      //     return null;
+                      //   },
+                      // ),
+                      ElevatedButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Select Location'),
+                                  content: OpenStreetMapSearchAndPick(
+                                    buttonColor: Colors.blue,
+                                    buttonText: 'Set Current Location',
+                                    onPicked: (pickedData) {
+                                      if (kDebugMode) {
+                                        print(pickedData.latLong.latitude);
+                                        print(pickedData.latLong.longitude);
+                                        print(pickedData.addressName);
+                                      }
+                                      place =
+                                          '${pickedData.latLong.latitude},${pickedData.latLong.longitude}';
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text('Close'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
                             );
                           },
-                        );
-                      },
-                      child: const Text('wow')),
-                  TextFormField(
-                    controller: mc4,
-                    textInputAction: TextInputAction.done,
-                    onEditingComplete: () => FocusScope.of(context).unfocus(),
-                    onChanged: (val4) {
-                      setState(() {
-                        host = val4;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      hintText: 'Enter the host',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter the host';
-                      }
-                      return null;
-                    },
-                  ),
-                  ElevatedButton(
-                    onPressed: _pickImage,
-                    child: const Text('Pick Image'),
-                  ),
-                  if (_pickedImage != null)
-                    Image.file(
-                      _pickedImage!,
-                      fit: BoxFit.cover,
-                      height: 200, // Adjust the height as needed
-                    ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        // Check if an image is selected
-                        if (_pickedImage != null) {
-                          // Upload the image and get the URL
-                          String imageUrl = await uploadImage(_pickedImage!);
-                          // Create the Jevent object with the image URL
-                          final newEvent = Jevent(
-                            name: name,
-                            date: buttonText,
-                            location: createPoint(
-                                place!), // Assuming createPoint can handle a default value
-                            hostName: host,
-                            imageUrl: imageUrl,
-                          );
-                          addEvent(newEvent);
-                          // Reset form and image selection
-                          _formKey.currentState!.reset();
+                          child: const Text('wow')),
+                      TextFormField(
+                        controller: mc4,
+                        textInputAction: TextInputAction.done,
+                        onEditingComplete: () =>
+                            FocusScope.of(context).unfocus(),
+                        onChanged: (val4) {
                           setState(() {
-                            _pickedImage = null;
+                            host = val4;
                           });
-                        } else {
-                          // Show error message if no image selected
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content:
-                                  Text('Please select an image for the event'),
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    child: const Text('Create Event'),
+                        },
+                        decoration: const InputDecoration(
+                          hintText: 'Enter the host',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter the host';
+                          }
+                          return null;
+                        },
+                      ),
+                      ElevatedButton(
+                        onPressed: _pickImage,
+                        child: const Text('Pick Image'),
+                      ),
+                      if (_pickedImage != null)
+                        Image.file(
+                          _pickedImage!,
+                          fit: BoxFit.cover,
+                          height: 200, // Adjust the height as needed
+                        ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            // Check if an image is selected
+                            if (_pickedImage != null) {
+                              // Upload the image and get the URL
+                              String imageUrl =
+                                  await uploadImage(_pickedImage!);
+                              // Create the Jevent object with the image URL
+                              final newEvent = Jevent(
+                                name: name,
+                                date: buttonText,
+                                location: createPoint(
+                                    place!), // Assuming createPoint can handle a default value
+                                hostName: host,
+                                imageUrl: imageUrl,
+                              );
+                              addEvent(newEvent);
+                              // Reset form and image selection
+                              _formKey.currentState!.reset();
+                              setState(() {
+                                _pickedImage = null;
+                              });
+                            } else {
+                              // Show error message if no image selected
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Please select an image for the event'),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        child: const Text('Create Event'),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          )
-    )]),
+                ),
+              ))
+      ]),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
