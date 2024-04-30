@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:intl/intl.dart';
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+
+import 'package:geolocator/geolocator.dart';
+import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
+import 'package:great_circle_distance_calculator/great_circle_distance_calculator.dart';
+
+import 'package:image_picker/image_picker.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:intl/intl.dart';
+
+import 'firebase_options.dart';
 import 'details.dart';
 import 'jevent.dart';
-import 'point.dart';
 import 'styles.dart';
-import 'firebase_options.dart';
-import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'point.dart';
 import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:great_circle_distance_calculator/great_circle_distance_calculator.dart';
 
 /// Determine the current position of the device.
 ///

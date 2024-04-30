@@ -35,78 +35,77 @@ class DetailPage extends StatelessWidget {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text('Event Details'),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () => Navigator.of(context).pop(),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Event Details'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
-    ),
-    body: SingleChildScrollView(
-      child: Column(
-        children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final maxWidth = constraints.maxWidth;
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.network(
-                  imageUrl,
-                  width: maxWidth * 0.75, // Set width to 75% of screen width
-                  height: maxWidth * 0.75, // Set height to match width
-                  fit: BoxFit.cover, // Maintain aspect ratio within container
-                ),
-              );
-            },
-          )
-
-        Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              title,
-              style: const TextStyle(
-                  fontSize: 24.0, fontWeight: FontWeight.bold),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final maxWidth = constraints.maxWidth;
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.network(
+                    imageUrl,
+                    width: maxWidth * 0.75, // Set width to 75% of screen width
+                    height: maxWidth * 0.75, // Set height to match width
+                    fit: BoxFit.cover, // Maintain aspect ratio within container
+                  ),
+                );
+              },
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(location),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Host: $hostName'),
-            ],
-          ),
-          const Text('Date:'),
-          Text(date),
-          GestureDetector(
-            onTap: () {
-              _launchURL(
-                  'https://www.google.com/maps/search/?api=1&query=${location.split(',')[0]}+${location.split(',')[1]}');
-              // Replace with your desired URL
-            },
-            child: Container(
-              padding: const EdgeInsets.all(12.0),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: const Text(
-                'Visit address',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16.0,
-                ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                title,
+                style: const TextStyle(
+                    fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(location),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Host: $hostName'),
+              ],
+            ),
+            const Text('Date:'),
+            Text(date),
+            GestureDetector(
+              onTap: () {
+                _launchURL(
+                    'https://www.google.com/maps/search/?api=1&query=${location.split(',')[0]}+${location.split(',')[1]}');
+                // Replace with your desired URL
+              },
+              child: Container(
+                padding: const EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: const Text(
+                  'Visit address',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16.0,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
   }
 
   Future<double> getImageAspectRatio(String imageUrl) async {
