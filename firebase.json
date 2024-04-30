@@ -1,0 +1,28 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "jevents-afg",
+          "appId": "1:533992936885:android:2b1e328ed228975bbf35fc",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "jevents-afg",
+          "configurations": {
+            "android": "1:533992936885:android:2b1e328ed228975bbf35fc",
+            "ios": "1:533992936885:ios:18d117bb88de5481bf35fc",
+            "macos": "1:533992936885:ios:18d117bb88de5481bf35fc",
+            "web": "1:533992936885:web:a1b1a2592e4c9321bf35fc",
+            "windows": "1:533992936885:web:410a95bf10abe353bf35fc"
+          }
+        }
+      }
+    }
+  },
+  "storage": {
+    "rules": "storage.rules"
+  }
+}
