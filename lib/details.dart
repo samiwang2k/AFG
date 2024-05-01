@@ -1,4 +1,3 @@
-import 'package:afg/styles.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -40,7 +39,6 @@ class DetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: colorWhite,
         title: const Text('Event Details'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -48,114 +46,73 @@ class DetailPage extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // Align content to left
-            children: [
-              Hero(
-  tag: imageUrl,
-  child: ClipRRect(
-    borderRadius: BorderRadius.circular(8.0),
-    child: Image.network(
-      imageUrl,
-      width: double.infinity, // Fill available width
-      fit: BoxFit.contain, // Maintain aspect ratio
-    ),
-  ),
-),
-              const SizedBox(height: 16.0), // Add spacing after image
-
-              // Information box with rounded corners, border, and increased size
-              Container(
+        child: Column(
+          children: [
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final maxWidth = constraints.maxWidth;
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.network(
+                    imageUrl,
+                    width: maxWidth * 0.75, // Set width to 75% of screen width
+                    height: maxWidth * 0.75, // Set height to match width
+                    fit: BoxFit.cover, // Maintain aspect ratio within container
+                  ),
+                );
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                title,
+                style: const TextStyle(
+                    fontSize: 24.0, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(location),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Host: $hostName'),
+              ],
+            ),
+            const Text('Date:'),
+            Text(date),
+            GestureDetector(
+              onTap: () {
+                launchURL(
+                    'https://www.google.com/maps/search/?api=1&query=${location.split(',')[0]}+${location.split(',')[1]}');
+                // Replace with your desired URL
+              },
+              child: Container(
+                padding: const EdgeInsets.all(12.0),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 1.0),
+                  color: Colors.blue,
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                padding: const EdgeInsets.all(20.0), // Increased padding
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start, // Align text to left
-                  children: [
-                    // Title with larger font
-                    Text(
-                      title,
-                      style: const TextStyle(
-                          fontSize: 24.0, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8.0), // Add spacing
-
-                    //
-
-// Host
-Row(
-children: [
-const Text(
-'Host: ',
-style: TextStyle(fontSize: 14.0, color: Colors.grey),
-),
-Text(hostName),
-],
-),
-const SizedBox(height: 4.0), // Add smaller spacing
-// Location
-Row(
-children: [
-const Text(
-'Location: ',
-style: TextStyle(fontSize: 14.0, color: Colors.grey),
-),
-Text(location),
-],
-),
-const SizedBox(height: 4.0), // Add smaller spacing
-// Date
-Row(
-children: [
-const Text(
-'Date: ',
-style: TextStyle(fontSize: 14.0, color: Colors.grey),
-),
-Text(date),
-],
-),
-],
-),
-),
-const SizedBox(height: 16.0),
-Center(child: 
-          GestureDetector(
-            onTap: () {
-              launchURL(
-                  'https://www.google.com/maps/search/?api=1&query=${location.split(',')[0]}+${location.split(',')[1]}');
-              // Replace with your desired URL
-            },
-            child: Container(
-                    padding: const EdgeInsets.all(12.0),
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: const Text(
-                'Visit address',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16.0,
-                ),
+                child: const Text(
+                  'Visit address',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16.0,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  ),
-  );
+    );
   }
 
   Future<double> getImageAspectRatio(String imageUrl) async {
     final response = await http.get(Uri.parse(imageUrl)); // Use await
     final contentType = response.headers['content-type'];
-    
+
     if (contentType != null && contentType.contains('image')) {
       final contentLength =
           int.tryParse(response.headers['content-length'] ?? '0');

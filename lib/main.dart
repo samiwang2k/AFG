@@ -9,7 +9,6 @@ import 'package:line_icons/line_icons.dart';
 import 'details.dart';
 import 'jevent.dart';
 import 'point.dart';
-import 'styles.dart';
 import 'firebase_options.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:geolocator/geolocator.dart';
@@ -299,7 +298,6 @@ class SecondRoute extends StatefulWidget {
   final List<String> sortedLocs = [];
   final List<String> sortedUrls = [];
   final distances = [];
-  
 
   @override
   SecondRouteState createState() => SecondRouteState();
@@ -326,7 +324,8 @@ class SecondRouteState extends State<SecondRoute> {
       // Check if an image is selected
       if (_pickedImage != null) {
         // Implement image upload logic (replace placeholder)
-        String imageUrl = await uploadImage(_pickedImage!); // Replace with your upload function
+        String imageUrl = await uploadImage(
+            _pickedImage!); // Replace with your upload function
         // Create the Jevent object
         final newEvent = Jevent(
           name: name,
@@ -354,8 +353,6 @@ class SecondRouteState extends State<SecondRoute> {
   }
 
   @override
- 
-
   void initState() {
     super.initState();
     getPos();
@@ -447,252 +444,278 @@ class SecondRouteState extends State<SecondRoute> {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
     return Theme(
-      data: ThemeData(
-        primaryColor: Colors.white,
-        colorScheme: const ColorScheme.light(secondary: colorGray),
-        textTheme: deviceWidth < 5000 ? textThemeSmall : textThemeDefault,
-      ),
-      child: Scaffold(
-        body: SizedBox(
-          width: deviceWidth, // Set the width of the SizedBox
-          height: deviceHeight,
-          // Set the height of the SizedBox
-          child: Card(
-            color: Colors.white,
-            margin: const EdgeInsets.all(10.0),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0)),
-            child: FutureBuilder<int>(
-              future: getTotalEvents(),
-              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else {
-                  final int totalJEvents = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: totalJEvents,
-                    itemBuilder: (BuildContext context, int index) {
-                      // Check if the index is within the valid range of the lists
-                      if (index >= widget.allJeventNames!.length ||
-                          index >= widget.allHosts!.length ||
-                          index >= widget.allDates!.length ||
-                          index >= widget.allLocs!.length) {
-                        // Handle the case where the index is out of range, e.g., return a default widget
-                        return const ListTile(
-                          tileColor: Colors.white,
-                          title: Text(
-                            'No more events',
-                            style: TextStyle(
-                              color: Colors.black, // Set text color (optional)
-                              fontSize: 16.0, // Set font size (optional)
-                              fontWeight:
-                                  FontWeight.w500, // Set font weight (optional)
+        data: ThemeData(
+          primaryColor: Colors.white,
+          colorScheme: const ColorScheme.light(secondary: Colors.white),
+        ),
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: SizedBox(
+            width: deviceWidth, // Set the width of the SizedBox
+            height: deviceHeight,
+            // Set the height of the SizedBox
+            child: Card(
+              color: Colors.white,
+              margin: const EdgeInsets.all(10.0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              child: FutureBuilder<int>(
+                future: getTotalEvents(),
+                builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    final int totalJEvents = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: totalJEvents,
+                      itemBuilder: (BuildContext context, int index) {
+                        // Check if the index is within the valid range of the lists
+                        if (index >= widget.allJeventNames!.length ||
+                            index >= widget.allHosts!.length ||
+                            index >= widget.allDates!.length ||
+                            index >= widget.allLocs!.length) {
+                          // Handle the case where the index is out of range, e.g., return a default widget
+                          return ListTile(
+                            shape: RoundedRectangleBorder(
+                                side: const BorderSide(
+                                    color: Colors.black, width: 1),
+                                borderRadius: BorderRadius.circular(5)),
+                            title: const Text(
+                              'No more events',
+                              style: TextStyle(
+                                color:
+                                    Colors.black, // Set text color (optional)
+                                fontSize: 16.0, // Set font size (optional)
+                                fontWeight: FontWeight
+                                    .w500, // Set font weight (optional)
+                              ),
                             ),
-                          ),
-                          subtitle: Text(
-                            '',
-                            style: TextStyle(
-                              color: Colors.black, // Set text color (optional)
-                              fontSize: 16.0, // Set font size (optional)
-                              fontWeight:
-                                  FontWeight.w500, // Set font weight (optional)
+                            subtitle: const Text(
+                              '',
+                              style: TextStyle(
+                                color:
+                                    Colors.black, // Set text color (optional)
+                                fontSize: 16.0, // Set font size (optional)
+                                fontWeight: FontWeight
+                                    .w500, // Set font weight (optional)
+                              ),
                             ),
-                          ),
+                          );
+                        }
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => DetailPage(
+                                            title:
+                                                widget.sortedJeventNames[index],
+                                            hostName: widget.sortedHosts[index],
+                                            date: widget.sortedDates[index],
+                                            location: widget.sortedLocs[index],
+                                            imageUrl: widget.sortedUrls[index],
+                                          )),
+                                );
+                                if (kDebugMode) {
+                                  print('ListTile tapped');
+                                }
+                              },
+                              child: Container(
+                                // Adjust height based on the number of text lines
+                                height: 125.0,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 1.0,
+                                  ),
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      blurRadius: 3.0, // Add a subtle shadow
+                                      color: Colors.grey.withOpacity(
+                                          0.2), // Light gray shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(
+                                      16.0), // Adjust padding for spacing
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Event title
+                                      Text(
+                                        widget.allJeventNames![index],
+                                        style: const TextStyle(
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors
+                                              .black, // Black text for title
+                                        ),
+                                      ),
+                                      // Host information
+                                      Row(
+                                        children: [
+                                          const Text(
+                                            "Hosted by: ",
+                                            style: TextStyle(
+                                              fontSize: 14.0,
+                                              color: Colors
+                                                  .black, // Black text for "Hosted by:"
+                                            ),
+                                          ),
+                                          Text(
+                                            widget.sortedHosts[index],
+                                            style: const TextStyle(
+                                              fontSize: 14.0,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      // Date on a separate line
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                              Icons.calendar_today_outlined,
+                                              size: 16.0,
+                                              color:
+                                                  Colors.black), // Black icon
+                                          const SizedBox(width: 5.0),
+                                          Text(
+                                            widget.sortedDates[index],
+                                            style: const TextStyle(
+                                              fontSize: 14.0,
+                                              color: Colors
+                                                  .black, // Black text for date
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      // Location on a separate line
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.location_on_outlined,
+                                              size: 16.0,
+                                              color:
+                                                  Colors.black), // Black icon
+                                          const SizedBox(width: 5.0),
+                                          Text(
+                                            widget.sortedLocs[index],
+                                            style: const TextStyle(
+                                              fontSize: 14.0,
+                                              color: Colors
+                                                  .black, // Black text for location
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (index < totalJEvents - 1) const Divider(),
+                          ],
                         );
-                      }
-
-                      return Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: <Widget>[
-    GestureDetector(
-      onTap: () {
-        Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => DetailPage(
-                                          title:
-                                              widget.sortedJeventNames[index],
-                                          hostName: widget.sortedHosts[index],
-                                          date: widget.sortedDates[index],
-                                          location: widget.sortedLocs[index],
-                                          imageUrl: widget.sortedUrls[index],
-                                        )),
-                              );
-        if (kDebugMode) {
-          print('ListTile tapped');
-        }
-      },
-      child: Container(
-        // Adjust height based on the number of text lines
-        height: 125.0, 
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10.0),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 3.0, // Add a subtle shadow
-              color: Colors.grey.withOpacity(0.2), // Light gray shadow
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0), // Adjust padding for spacing
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Event title
-              Text(
-                widget.allJeventNames![index],
-                style: const TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black, // Black text for title
-                ),
-              ),
-              // Host information
-              Row(
-                children: [
-                  const Text(
-                    "Hosted by: ",
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.black, // Black text for "Hosted by:"
-                    ),
-                  ),
-                  Text(
-                    widget.sortedHosts[index],
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-              // Date on a separate line
-              Row(
-                children: [
-                  const Icon(Icons.calendar_today_outlined, size: 16.0, color: Colors.black), // Black icon
-                  const SizedBox(width: 5.0),
-                  Text(
-                    widget.sortedDates[index],
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.black, // Black text for date
-                    ),
-                  ),
-                ],
-              ),
-              // Location on a separate line
-              Row(
-                children: [
-                  const Icon(Icons.location_on_outlined, size: 16.0, color: Colors.black), // Black icon
-                  const SizedBox(width: 5.0),
-                  Text(
-                    widget.sortedLocs[index],
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.black, // Black text for location
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-    if (index < totalJEvents - 1) const Divider(),
-  ],
-);
-
-                    },
-                  );
-                }
-              },
-            ),
-          ),
-        ),
-        appBar: AppBar(
-          title: const Text('Second Route'),
-          automaticallyImplyLeading: false,
-        ),
-              floatingActionButton: FloatingActionButton(
-    backgroundColor: Colors.blue,
-    child: const Icon(Icons.add, color: Colors.white),
-    onPressed: () {
-            setState(() {
-              _showTextFields = true;
-            });
-    },
-  ),
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 20,
-                color: Colors.black.withOpacity(.1),
-              )
-            ],
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
-              child: GNav(
-                rippleColor: Colors.grey[300]!,
-                hoverColor: Colors.grey[100]!,
-                gap: 8,
-                activeColor: Colors.black,
-                iconSize: 24,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                duration: const Duration(milliseconds: 400),
-                tabBackgroundColor: Colors.grey[100]!,
-                color: Colors.black,
-                tabs: const [
-                  GButton(
-                    icon: LineIcons.home,
-                    text: 'Home',
-                  ),
-                  GButton(
-                    icon: LineIcons.search,
-                    text: 'Search',
-                  ),
-                  GButton(
-                    icon: LineIcons.user,
-                    text: 'Profile',
-                  ),
-                ],
-                selectedIndex: 1,
-                onTabChange: (index) {
-                  switch (index) {
-                    case 0:
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const FirstRoute()),
-                      );
-                      break;
-                    case 2:
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ThirdRoute()),
-                      );
-                      break;
-                    default:
-                      break;
+                      },
+                    );
                   }
                 },
               ),
             ),
           ),
-        ),
-      ));
-
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: const Text(
+              'Upcoming Events',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.blue,
+            child: const Icon(Icons.add, color: Colors.white),
+            onPressed: () {
+              setState(() {
+                _showTextFields = true;
+              });
+            },
+          ),
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 20,
+                  color: Colors.black.withOpacity(.1),
+                )
+              ],
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+                child: GNav(
+                  rippleColor: Colors.grey[300]!,
+                  hoverColor: Colors.grey[100]!,
+                  gap: 8,
+                  activeColor: Colors.black,
+                  iconSize: 24,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  duration: const Duration(milliseconds: 400),
+                  tabBackgroundColor: Colors.grey[100]!,
+                  color: Colors.black,
+                  tabs: const [
+                    GButton(
+                      icon: LineIcons.home,
+                      text: 'Home',
+                    ),
+                    GButton(
+                      icon: LineIcons.search,
+                      text: 'Search',
+                    ),
+                    GButton(
+                      icon: LineIcons.user,
+                      text: 'Profile',
+                    ),
+                  ],
+                  selectedIndex: 1,
+                  onTabChange: (index) {
+                    switch (index) {
+                      case 0:
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const FirstRoute()),
+                        );
+                        break;
+                      case 2:
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ThirdRoute()),
+                        );
+                        break;
+                      default:
+                        break;
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+        ));
   }
 }
 
@@ -789,11 +812,11 @@ class ThirdRouteState extends State<ThirdRoute> {
                           });
                         },
                         decoration: const InputDecoration(
-                          hintText: 'Enter your name',
+                          hintText: 'Enter the name of the event',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your name';
+                            return 'Enter the name of the event';
                           }
                           return null;
                         },
@@ -830,8 +853,8 @@ class ThirdRouteState extends State<ThirdRoute> {
                             }
                           }
                         },
-                        child: Text(
-                            buttonText), // Assuming buttonText is a variable holding the button text
+                        child: const Text(
+                            'Select Date'), // Assuming buttonText is a variable holding the button text
                       ),
                       ElevatedButton(
                           onPressed: () {
@@ -866,7 +889,7 @@ class ThirdRouteState extends State<ThirdRoute> {
                               },
                             );
                           },
-                          child: const Text('wow')),
+                          child: const Text('Select Location')),
                       TextFormField(
                         controller: mc4,
                         textInputAction: TextInputAction.done,
@@ -878,11 +901,11 @@ class ThirdRouteState extends State<ThirdRoute> {
                           });
                         },
                         decoration: const InputDecoration(
-                          hintText: 'Enter the host',
+                          hintText: 'Please enter the name of the host',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter the host';
+                            return 'Please enter the name of the host';
                           }
                           return null;
                         },
