@@ -1,9 +1,26 @@
+import 'package:afg/rsvp.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as images;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
+import 'package:geocoding/geocoding.dart';
+
+Future<String?> getAddressFromLatLng(double latitude, double longitude) async {
+  try {
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(latitude, longitude);
+    if (placemarks.isNotEmpty) {
+      // Extract relevant address components (customize as needed)
+      Placemark firstPlacemark = placemarks.first;
+      return '${firstPlacemark.street}, ${firstPlacemark.locality}, ${firstPlacemark.administrativeArea}, ${firstPlacemark.country}';
+    }
+  } catch (e) {
+    return null; // Handle exceptions (e.g., network errors)
+  }
+  return null;
+}
 
 class DetailPage extends StatelessWidget {
   final String title;
@@ -32,10 +49,12 @@ class DetailPage extends StatelessWidget {
     } else {
       throw 'Could not launch $urlWithoutSpaces';
     }
+    
   }
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Event Details'),
@@ -101,6 +120,15 @@ class DetailPage extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RSVPPage()),
+                );
+              },
+              child: Text('RSVP'),
             ),
           ],
         ),
