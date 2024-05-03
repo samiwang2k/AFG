@@ -6,18 +6,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
 import 'details.dart';
 import 'jevent.dart';
 import 'point.dart';
 import 'firebase_options.dart';
-import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:great_circle_distance_calculator/great_circle_distance_calculator.dart';
 
 /// Determine the current position of the device.
@@ -72,6 +69,7 @@ Future<String?> signInWithEmailPassword(String email, String password) async {
     return null;
   }
 }
+
 bool _showTextFields = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -306,15 +304,12 @@ class SecondRoute extends StatefulWidget {
 }
 
 class SecondRouteState extends State<SecondRoute> {
-
-
   final _formKey = GlobalKey<FormState>(); // GlobalKey for form validation
   String name = '';
   String buttonText = ''; // Assuming variable holds selected date
   String place = '';
   String host = '';
   File? _pickedImage;
-
 
   Future<void> createEvent(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -645,13 +640,11 @@ class SecondRouteState extends State<SecondRoute> {
             onPressed: () {
               setState(() {
                 _showTextFields = true;
-              })
-              ;
+              });
               Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const createPage()),
-                        );
+                context,
+                MaterialPageRoute(builder: (context) => const CreatePage()),
+              );
             },
           ),
           bottomNavigationBar: Container(
@@ -733,12 +726,18 @@ class ThirdRouteState extends State<ThirdRoute> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    throw UnimplementedError();
+    return Scaffold(
+      body: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {},
+            child: const Text("h"),
+          ),
+        ],
+      ),
+    );
   }
-  
 }
-
-
 
 Future<String?> signUpWithEmailPassword(String email, String password) async {
   try {

@@ -5,7 +5,6 @@ import 'package:image/image.dart' as images;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
-import 'package:geocoding/geocoding.dart';
 
 Future<String?> getAddressFromLatLng(double latitude, double longitude) async {
   try {
@@ -49,12 +48,10 @@ class DetailPage extends StatelessWidget {
     } else {
       throw 'Could not launch $urlWithoutSpaces';
     }
-    
   }
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Event Details'),
@@ -125,10 +122,10 @@ class DetailPage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => RSVPPage()),
+                  MaterialPageRoute(builder: (context) => const RSVPPage()),
                 );
               },
-              child: Text('RSVP'),
+              child: const Text('RSVP'),
             ),
           ],
         ),

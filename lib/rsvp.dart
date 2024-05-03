@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 class RSVPPage extends StatefulWidget {
+  const RSVPPage({super.key});
+
   @override
-  _RSVPPageState createState() => _RSVPPageState();
+  RSVPPageState createState() => RSVPPageState();
 }
 
-class _RSVPPageState extends State<RSVPPage> {
+class RSVPPageState extends State<RSVPPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
@@ -13,26 +15,26 @@ class _RSVPPageState extends State<RSVPPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('RSVP'),
+        title: const Text('RSVP'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
             TextFormField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
+              decoration: const InputDecoration(labelText: 'Name'),
             ),
             TextFormField(
               controller: _phoneController,
-              decoration: InputDecoration(labelText: 'Phone Number'),
+              decoration: const InputDecoration(labelText: 'Phone Number'),
               keyboardType: TextInputType.phone,
             ),
             ElevatedButton(
               onPressed: () {
                 // Handle submission
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
           ],
         ),

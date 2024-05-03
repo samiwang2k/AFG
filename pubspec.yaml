@@ -55,6 +55,7 @@ dependencies:
   great_circle_distance_calculator: ^1.0.4
   http: ^1.2.1
   shared_preferences: ^2.2.3
+  flutter_datetime_picker_bdaya: ^3.0.2
 
 dev_dependencies:
   flutter_test:
