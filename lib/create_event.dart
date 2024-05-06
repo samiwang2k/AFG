@@ -56,7 +56,7 @@ class CreatePageState extends State<CreatePage> {
   String? place;
 
   String buttonText = "";
-  final _formKey = GlobalKey<FormState>();
+  // final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {

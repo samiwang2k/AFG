@@ -1,4 +1,4 @@
-import 'package:afg/main.dart';
+// import 'package:afg/main.dart';
 import 'package:flutter/material.dart';
 
 class SignInForm extends StatefulWidget {
@@ -95,25 +95,25 @@ class SignInFormState extends State<SignInForm> {
     );
   }
 
-  void _signIn() async {
-    String? userId = await signInWithEmailPassword(
-      _emailController.text,
-      _passwordController.text,
-    );
-    if (userId != null) {
-      if (mounted) {
-        // Sign-in successful, navigate to the main content
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const FirstRoute()),
-        );
-      }
-    } else {
-      if (mounted) {
-        // Sign-in failed, show an error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sign-in failed')),
-        );
-      }
-    }
-  }
+  // void _signIn() async {
+  //   String? userId = await signInWithEmailPassword(
+  //     _emailController.text,
+  //     _passwordController.text,
+  //   );F
+  //   if (userId != null) {
+  //     if (mounted) {
+  //       // Sign-in successful, navigate to the main content
+  //       Navigator.of(context).pushReplacement(
+  //         MaterialPageRoute(builder: (context) => const FirstRoute()),
+  //       );
+  //     }
+  //   } else {
+  //     if (mounted) {
+  //       // Sign-in failed, show an error message
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('Sign-in failed')),
+  //       );
+  //     }
+  //   }
+  // }
 }

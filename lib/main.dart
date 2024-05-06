@@ -82,6 +82,7 @@ Future<String?> signInWithEmailPassword(String email, String password) async {
   }
 }
 
+// ignore: unused_element
 bool _showTextFields = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
