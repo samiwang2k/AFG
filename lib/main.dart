@@ -21,6 +21,18 @@ import 'package:great_circle_distance_calculator/great_circle_distance_calculato
 ///
 /// When the location services are not enabled or permissions
 /// are denied the `Future` will return an error.
+///
+final List<String> allJeventNames = [];
+final List<String> allHosts = [];
+final List<String> allDates = [];
+final List<String> allLocs = [];
+final List<String> allUrls = [];
+final List<String> sortedJeventNames = [];
+final List<String> sortedHosts = [];
+final List<String> sortedDates = [];
+final List<String> sortedLocs = [];
+final List<String> sortedUrls = [];
+final distances = [];
 Future<Position> _determinePosition() async {
   LocationPermission permission;
   permission = await Geolocator.requestPermission();
@@ -134,6 +146,7 @@ Future<String> createEvent(String textyInput, File imageFile) async {
 
   // Save the event details to Firestore
   CollectionReference events = FirebaseFirestore.instance.collection('events');
+
   await events.add({
     'name': jevent.name,
     'date': jevent.date,
@@ -210,8 +223,6 @@ class FirstRoute extends StatefulWidget {
 }
 
 class FirstRouteState extends State<FirstRoute> {
-  String? please = 'press to work (please)';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -262,7 +273,8 @@ class FirstRouteState extends State<FirstRoute> {
                   case 1:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SecondRoute()),
+                      MaterialPageRoute(
+                          builder: (context) => const SecondRoute()),
                     );
 
                     break;
@@ -286,18 +298,7 @@ class FirstRouteState extends State<FirstRoute> {
 }
 
 class SecondRoute extends StatefulWidget {
-  SecondRoute({super.key});
-  final List<String>? allJeventNames = [];
-  final List<String>? allHosts = [];
-  final List<String>? allDates = [];
-  final List<String>? allLocs = [];
-  final List<String>? allUrls = [];
-  final List<String> sortedJeventNames = [];
-  final List<String> sortedHosts = [];
-  final List<String> sortedDates = [];
-  final List<String> sortedLocs = [];
-  final List<String> sortedUrls = [];
-  final distances = [];
+  const SecondRoute({super.key});
 
   @override
   SecondRouteState createState() => SecondRouteState();
@@ -390,13 +391,12 @@ class SecondRouteState extends State<SecondRoute> {
       final List<dynamic> jevents = doc['events'];
 
       for (var thingy in jevents) {
-        widget.allJeventNames?.add(thingy['name']);
-        widget.allHosts?.add(thingy['hostName']);
-        widget.allDates?.add(thingy['date']);
+        allJeventNames.add(thingy['name']);
+        allHosts.add(thingy['hostName']);
+        allDates.add(thingy['date']);
 
-        widget.allLocs
-            ?.add('${thingy['location']['x']}, ${thingy['location']['y']}');
-        widget.allUrls?.add('${thingy['imageUrl']}');
+        allLocs.add('${thingy['location']['x']}, ${thingy['location']['y']}');
+        allUrls.add('${thingy['imageUrl']}');
         final lat1 = lat;
         final lon1 = long;
 
@@ -408,25 +408,19 @@ class SecondRouteState extends State<SecondRoute> {
             longitude1: lon1,
             latitude2: lat2,
             longitude2: lon2);
-        widget.distances.add(gcd.haversineDistance());
+        distances.add(gcd.haversineDistance());
 
-        if (kDebugMode) {
-          print(widget.distances);
-        }
-
-        // Use widget.allJeventNames to access the allJeventNames list
+        // Use allJeventNames to access the allJeventNames list
       }
-      List<double> sortedDistances = List.from(widget.distances)..sort();
-
-// Step 3: Reorder other lists based on sorted distances
+      List<double> sortedDistances = List.from(distances)..sort();
 
       for (int i = 0; i < sortedDistances.length; i++) {
-        int index = widget.distances.indexOf(sortedDistances[i]);
-        widget.sortedJeventNames.add(widget.allJeventNames![index]);
-        widget.sortedHosts.add(widget.allHosts![index]);
-        widget.sortedDates.add(widget.allDates![index]);
-        widget.sortedLocs.add(widget.allLocs![index]);
-        widget.sortedUrls.add(widget.allUrls![index]);
+        int index = distances.indexOf(sortedDistances[i]);
+        sortedJeventNames.add(allJeventNames[index]);
+        sortedHosts.add(allHosts[index]);
+        sortedDates.add(allDates[index]);
+        sortedLocs.add(allLocs[index]);
+        sortedUrls.add(allUrls[index]);
       }
     }
   }
@@ -464,10 +458,10 @@ class SecondRouteState extends State<SecondRoute> {
                       itemCount: totalJEvents,
                       itemBuilder: (BuildContext context, int index) {
                         // Check if the index is within the valid range of the lists
-                        if (index >= widget.allJeventNames!.length ||
-                            index >= widget.allHosts!.length ||
-                            index >= widget.allDates!.length ||
-                            index >= widget.allLocs!.length) {
+                        if (index >= allJeventNames.length ||
+                            index >= allHosts.length ||
+                            index >= allDates.length ||
+                            index >= allLocs.length) {
                           // Handle the case where the index is out of range, e.g., return a default widget
                           return ListTile(
                             shape: RoundedRectangleBorder(
@@ -506,12 +500,11 @@ class SecondRouteState extends State<SecondRoute> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => DetailPage(
-                                            title:
-                                                widget.sortedJeventNames[index],
-                                            hostName: widget.sortedHosts[index],
-                                            date: widget.sortedDates[index],
-                                            location: widget.sortedLocs[index],
-                                            imageUrl: widget.sortedUrls[index],
+                                            title: sortedJeventNames[index],
+                                            hostName: sortedHosts[index],
+                                            date: sortedDates[index],
+                                            location: sortedLocs[index],
+                                            imageUrl: sortedUrls[index],
                                           )),
                                 );
                                 if (kDebugMode) {
@@ -545,7 +538,7 @@ class SecondRouteState extends State<SecondRoute> {
                                     children: [
                                       // Event title
                                       Text(
-                                        widget.allJeventNames![index],
+                                        sortedJeventNames[index],
                                         style: const TextStyle(
                                           fontSize: 18.0,
                                           fontWeight: FontWeight.bold,
@@ -565,7 +558,7 @@ class SecondRouteState extends State<SecondRoute> {
                                             ),
                                           ),
                                           Text(
-                                            widget.sortedHosts[index],
+                                            sortedHosts[index],
                                             style: const TextStyle(
                                               fontSize: 14.0,
                                               fontWeight: FontWeight.w500,
@@ -583,7 +576,7 @@ class SecondRouteState extends State<SecondRoute> {
                                                   Colors.black), // Black icon
                                           const SizedBox(width: 5.0),
                                           Text(
-                                            widget.sortedDates[index],
+                                            sortedDates[index],
                                             style: const TextStyle(
                                               fontSize: 14.0,
                                               color: Colors
@@ -601,7 +594,7 @@ class SecondRouteState extends State<SecondRoute> {
                                                   Colors.black), // Black icon
                                           const SizedBox(width: 5.0),
                                           Text(
-                                            widget.sortedLocs[index],
+                                            sortedLocs[index],
                                             style: const TextStyle(
                                               fontSize: 14.0,
                                               color: Colors
@@ -725,7 +718,6 @@ class ThirdRoute extends StatefulWidget {
 class ThirdRouteState extends State<ThirdRoute> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       body: Column(
         children: [

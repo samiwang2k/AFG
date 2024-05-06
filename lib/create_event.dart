@@ -281,34 +281,32 @@ class CreatePageState extends State<CreatePage> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    // Check if an image is selected
-                    if (_pickedImage != null) {
-                      // Upload the image and get the URL
-                      String imageUrl = await uploadImage(_pickedImage!);
-                      // Create the Jevent object with the image URL
-                      final newEvent = Jevent(
-                        name: name,
-                        date: buttonText,
-                        location: createPoint(
-                            place!), // Assuming createPoint can handle a default value
-                        hostName: host,
-                        imageUrl: imageUrl,
-                      );
-                      addEvent(newEvent);
-                      // Reset form and image selection
-                      _formKey.currentState!.reset();
-                      setState(() {
-                        _pickedImage = null;
-                      });
-                    } else {
-                      // Show error message if no image selected
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please select an image for the event'),
-                        ),
-                      );
-                    }
+                  // Check if an image is selected
+                  if (_pickedImage != null) {
+                    // Upload the image and get the URL
+                    String imageUrl = await uploadImage(_pickedImage!);
+                    // Create the Jevent object with the image URL
+                    final newEvent = Jevent(
+                      name: name,
+                      date: buttonText,
+                      location: createPoint(
+                          place!), // Assuming createPoint can handle a default value
+                      hostName: host,
+                      imageUrl: imageUrl,
+                    );
+                    addEvent(newEvent);
+                    // Reset form and image selection
+
+                    setState(() {
+                      _pickedImage = null;
+                    });
+                  } else {
+                    // Show error message if no image selected
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please select an image for the event'),
+                      ),
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -393,7 +391,7 @@ class CreatePageState extends State<CreatePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SecondRoute()),
+                              builder: (context) => const SecondRoute()),
                         );
                         break;
                       default:

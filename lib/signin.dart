@@ -16,49 +16,80 @@ class SignInFormState extends State<SignInForm> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      // Add Material widget here
       child: Form(
         key: _formKey,
-        child: Column(
-          children: [
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your password';
-                }
-                return null;
-              },
-              obscureText: true,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _signIn();
-                }
-              },
-              child: const Text('Sign In'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const SignUpForm()),
-                );
-              },
-              child: const Text('Sign Up'),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20.0, 100.0, 20.0, 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Restrict column size
+            crossAxisAlignment:
+                CrossAxisAlignment.center, // Center child widgets
+            children: [
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20.0), // Add space between fields
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Password'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  return null;
+                },
+                obscureText: true,
+              ),
+              const SizedBox(height: 20.0), // Add space between fields
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center, // Center buttons
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      textStyle:
+                          const TextStyle(fontSize: 16.0, color: Colors.black),
+                      elevation: 0.0,
+                      shadowColor: Colors.transparent,
+                      backgroundColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        side: const BorderSide(color: Colors.black, width: 2.0),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40.0), // Double padding for longer button
+                    ),
+                    onPressed: () {},
+                    child: const Text('Sign In'),
+                  ),
+                  const SizedBox(width: 20.0), // Space between buttons
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      textStyle:
+                          const TextStyle(fontSize: 16.0, color: Colors.black),
+                      elevation: 0.0,
+                      shadowColor: Colors.transparent,
+                      backgroundColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        side: const BorderSide(color: Colors.black, width: 2.0),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40.0), // Double padding for longer button
+                    ),
+                    onPressed: () {},
+                    child: const Text('Sign Up'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

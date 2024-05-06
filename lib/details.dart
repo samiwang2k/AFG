@@ -1,4 +1,4 @@
-import 'package:afg/rsvp.dart';
+import 'package:afg/add_signup.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as images;
@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 
+// for each string, find its index in the location and then display all those values in homepage
 Future<String?> getAddressFromLatLng(double latitude, double longitude) async {
   try {
     List<Placemark> placemarks =
@@ -120,10 +121,11 @@ class DetailPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RSVPPage()),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => const RSVPPage()),
+                // );
+                addSignup(location);
               },
               child: const Text('RSVP'),
             ),

@@ -84,4 +84,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'jevents-afg.appspot.com',
     measurementId: 'G-93M9BEC43F',
   );
+
 }
