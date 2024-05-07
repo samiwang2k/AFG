@@ -9,6 +9,7 @@ class Jevent {
   Point? _location;
   String? _hostName;
   String? _imageUrl; // New image property
+  String? _time;
 
   // Updated constructor to include imageUrl parameter
   Jevent(
@@ -16,16 +17,24 @@ class Jevent {
       String? date,
       Point? location,
       String? hostName,
-      String? imageUrl}) {
+      String? imageUrl,
+      String? time}) {
     this.name = name;
     this.date = date;
     this.location = location;
     this.hostName = hostName;
     this.imageUrl = imageUrl; // Set the image URL
+    this.time = time;
   }
 
   // Getter for name
   String? get name => _name;
+
+  set time(String? value) {
+    _time = value;
+  }
+
+  String? get time => _time;
 
   // Setter for name
   set name(String? value) {
@@ -66,7 +75,7 @@ class Jevent {
 
   @override
   String toString() {
-    return 'The event name is $name. It is being run by $hostName on $date at $location. Image URL: $imageUrl';
+    return 'The event name is $name. It is being run by $hostName on $date at $location at $time. Image URL: $imageUrl';
   }
 
   Map<String, dynamic> toMap() {
@@ -75,7 +84,8 @@ class Jevent {
       'date': date,
       'location': location?.toMap(),
       'hostName': hostName,
-      'imageUrl': imageUrl, // Include the image URL in the map
+      'imageUrl': imageUrl,
+      'time': time,
     };
   }
 }
