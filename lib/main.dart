@@ -19,32 +19,33 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:great_circle_distance_calculator/great_circle_distance_calculator.dart';
 
+
 final List<String> allJeventNames = [];
 final List<String> allHosts = [];
 final List<String> allDates = [];
 final List<String> allLocs = [];
 final List<String> allUrls = [];
-final List<String> allTimes = [];
 final List<String> sortedJeventNames = [];
 final List<String> sortedHosts = [];
 final List<String> sortedDates = [];
 final List<String> sortedLocs = [];
 final List<String> sortedUrls = [];
-final List<String> sortedTimes = [];
 final distances = [];
-final List<int> signups = [];
+final List<int> signups=[];
 Future<List<int>> getAllSignups() async {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final QuerySnapshot querySnapshot = await firestore.collection('users').get();
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final QuerySnapshot querySnapshot =
+        await firestore.collection('users').get();
 
-  for (var doc in querySnapshot.docs) {
-    final List<dynamic> jevents = doc['signups'];
-    for (var stringy in jevents) {
-      signups.add(sortedLocs.indexOf(stringy));
-    }
+    for (var doc in querySnapshot.docs) {
+      final List<dynamic> jevents = doc['signups'];
+      for(var stringy in jevents){
+        signups.add(sortedLocs.indexOf(stringy));
+      }
+      
+        
   }
-  return signups;
-}
+  return signups;}
 
 Future<Position> _determinePosition() async {
   LocationPermission permission;
@@ -73,64 +74,62 @@ Future<void> signOut() async {
     }
   }
 }
-
 double lat = 0;
-double long = 0;
-void getPos() async {
-  Position? currentPos = await _determinePosition();
-
-  lat = currentPos.latitude;
-  long = currentPos.longitude;
-
-  if (kDebugMode) {
-    print(currentPos.latitude);
-    print(currentPos.longitude);
-  }
-}
-
-Future<void> getAllEventData() async {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final QuerySnapshot querySnapshot = await firestore.collection('users').get();
-
-  for (var doc in querySnapshot.docs) {
-    final List<dynamic> jevents = doc['events'];
-
-    for (var thingy in jevents) {
-      allJeventNames.add(thingy['name']);
-      allHosts.add(thingy['hostName']);
-      allDates.add(thingy['date']);
-
-      allLocs.add('${thingy['location']['x']}, ${thingy['location']['y']}');
-      allUrls.add('${thingy['imageUrl']}');
-      allTimes.add(thingy['time']);
-
-      getPos();
-      final lat1 = lat;
-      final lon1 = long;
-
-      final lat2 = thingy['location']['x'];
-      final lon2 = thingy['location']['y'];
-
-      var gcd = GreatCircleDistance.fromDegrees(
-          latitude1: lat1, longitude1: lon1, latitude2: lat2, longitude2: lon2);
-      distances.add(gcd.haversineDistance());
-
-      // Use allJeventNames to access the allJeventNames list
-    }
-    List<double> sortedDistances = List.from(distances)..sort();
-
-    for (int i = 0; i < sortedDistances.length; i++) {
-      int index = distances.indexOf(sortedDistances[i]);
-      sortedJeventNames.add(allJeventNames[index]);
-      sortedHosts.add(allHosts[index]);
-      sortedDates.add(allDates[index]);
-      sortedLocs.add(allLocs[index]);
-      sortedUrls.add(allUrls[index]);
-      sortedTimes.add(allTimes[index]);
+  double long = 0;
+  void getPos() async {
+    Position? currentPos = await _determinePosition();
+    
+      lat = currentPos.latitude;
+      long = currentPos.longitude;
+    
+    if (kDebugMode) {
+      print(currentPos.latitude);
+      print(currentPos.longitude);
     }
   }
-}
+ Future<void> getAllEventData() async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final QuerySnapshot querySnapshot =
+        await firestore.collection('users').get();
 
+    for (var doc in querySnapshot.docs) {
+      final List<dynamic> jevents = doc['events'];
+
+      for (var thingy in jevents) {
+        allJeventNames.add(thingy['name']);
+        allHosts.add(thingy['hostName']);
+        allDates.add(thingy['date']);
+
+        allLocs.add('${thingy['location']['x']}, ${thingy['location']['y']}');
+        allUrls.add('${thingy['imageUrl']}');
+        getPos();
+        final lat1 = lat;
+        final lon1 = long;
+
+        final lat2 = thingy['location']['x'];
+        final lon2 = thingy['location']['y'];
+
+        var gcd = GreatCircleDistance.fromDegrees(
+            latitude1: lat1,
+            longitude1: lon1,
+            latitude2: lat2,
+            longitude2: lon2);
+        distances.add(gcd.haversineDistance());
+
+        // Use allJeventNames to access the allJeventNames list
+      }
+      List<double> sortedDistances = List.from(distances)..sort();
+
+      for (int i = 0; i < sortedDistances.length; i++) {
+        int index = distances.indexOf(sortedDistances[i]);
+        sortedJeventNames.add(allJeventNames[index]);
+        sortedHosts.add(allHosts[index]);
+        sortedDates.add(allDates[index]);
+        sortedLocs.add(allLocs[index]);
+        sortedUrls.add(allUrls[index]);
+      }
+    }
+  }
 String? userNumber;
 
 Future<String?> signInWithEmailPassword(String email, String password) async {
@@ -188,46 +187,46 @@ Point? createPoint(String inputted) {
   return null;
 }
 
-// Future<String> createEvent(String textyInput, File imageFile) async {
-//   List<String> jevents = textyInput.split('#');
-//   Jevent jevent = Jevent(
-//     name: jevents[0],
-//     date: jevents[1],
-//     location: createPoint(
-//         jevents[2]), // Assuming createPoint can handle a default value
-//     hostName: jevents.last,
-//   );
+Future<String> createEvent(String textyInput, File imageFile) async {
+  List<String> jevents = textyInput.split('#');
+  Jevent jevent = Jevent(
+    name: jevents[0],
+    date: jevents[1],
+    location: createPoint(
+        jevents[2]), // Assuming createPoint can handle a default value
+    hostName: jevents.last,
+  );
 
-//   // Upload the image to Firebase Storage
-//   final bytes = imageFile.readAsBytesSync();
-//   var timestamp = DateTime.now();
-//   final metadata = SettableMetadata(contentType: 'image/jpeg');
-//   UploadTask task = FirebaseStorage.instance
-//       .ref('EventImages/$timestamp/${imageFile.path.split('/').last}')
-//       .putData(bytes, metadata);
-//   TaskSnapshot downloadUrlSnapshot = await task;
+  // Upload the image to Firebase Storage
+  final bytes = imageFile.readAsBytesSync();
+  var timestamp = DateTime.now();
+  final metadata = SettableMetadata(contentType: 'image/jpeg');
+  UploadTask task = FirebaseStorage.instance
+      .ref('EventImages/$timestamp/${imageFile.path.split('/').last}')
+      .putData(bytes, metadata);
+  TaskSnapshot downloadUrlSnapshot = await task;
 
-//   // Get the download URL of the uploaded image
-//   String imageUrl = await downloadUrlSnapshot.ref.getDownloadURL();
-//   jevent.imageUrl = imageUrl; // Set the image URL in the Jevent object
+  // Get the download URL of the uploaded image
+  String imageUrl = await downloadUrlSnapshot.ref.getDownloadURL();
+  jevent.imageUrl = imageUrl; // Set the image URL in the Jevent object
 
-//   if (kDebugMode) {
-//     print(jevent);
-//   }
+  if (kDebugMode) {
+    print(jevent);
+  }
 
-//   // Save the event details to Firestore
-//   CollectionReference events = FirebaseFirestore.instance.collection('events');
+  // Save the event details to Firestore
+  CollectionReference events = FirebaseFirestore.instance.collection('events');
 
-//   await events.add({
-//     'name': jevent.name,
-//     'date': jevent.date,
-//     'location': jevent.location?.toMap(),
-//     'hostName': jevent.hostName,
-//     'imageUrl': jevent.imageUrl, // Save the image URL
-//   });
+  await events.add({
+    'name': jevent.name,
+    'date': jevent.date,
+    'location': jevent.location?.toMap(),
+    'hostName': jevent.hostName,
+    'imageUrl': jevent.imageUrl, // Save the image URL
+  });
 
-//   return jevent.toString();
-// }
+  return jevent.toString();
+}
 
 Future<void> addPoint(Point point) async {
   Map<String, dynamic> pointMap = point.toMap();
@@ -299,145 +298,142 @@ class FirstRouteState extends State<FirstRoute> {
     super.initState();
     getAllEventData();
     getAllSignups();
+    
   }
 
+
   @override
-  Widget build(BuildContext context) {
+   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
         automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<List<int>>(
-        future: getAllSignups(), // This function returns Future<List<int>>
-        builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            final List<int> signups =
-                snapshot.data ?? []; // Use snapshot.data directly
-            return ListView.builder(
-              itemCount:
-                  signups.length, // Use the length of signups as itemCount
-              itemBuilder: (BuildContext context, int index) {
-                // Check if the index is within the valid range of the lists and present in signups
-                if (index >= allJeventNames.length ||
-                    index >= allHosts.length ||
-                    index >= allDates.length ||
-                    index >= allLocs.length ||
-                    !signups.contains(index)) {
-                  // Handle the case where the index is out of range or not in signups, e.g., return a default widget
-                  return null;
-                }
+  future: getAllSignups(), // This function returns Future<List<int>>
+  builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (snapshot.hasError) {
+      return Center(child: Text('Error: ${snapshot.error}'));
+    } else {
+      final List<int> signups = snapshot.data?? []; // Use snapshot.data directly
+      return ListView.builder(
+        itemCount: signups.length, // Use the length of signups as itemCount
+        itemBuilder: (BuildContext context, int index) {
+          // Check if the index is within the valid range of the lists and present in signups
+          if (index >= allJeventNames.length || 
+              index >= allHosts.length || 
+              index >= allDates.length || 
+              index >= allLocs.length || 
+             !signups.contains(index)) {
+            // Handle the case where the index is out of range or not in signups, e.g., return a default widget
+            return null;
+          }
 
-                // Assuming sortedJeventNames, sortedHosts, sortedDates, sortedLocs, and sortedUrls are lists that correspond to the indices in signups
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DetailPage(
-                                    title: sortedJeventNames[index],
-                                    hostName: sortedHosts[index],
-                                    date: sortedDates[index],
-                                    location: sortedLocs[index],
-                                    imageUrl: sortedUrls[index],
-                                    time: sortedTimes[index],
-                                  )),
-                        );
-                        // Using GetX for debug mode check
-                        print('ListTile tapped');
-                      },
-                      child: Container(
-                        height: 125.0,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black, width: 1.0),
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10.0),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: 3.0,
-                              color: Colors.grey.withOpacity(0.2),
+          // Assuming sortedJeventNames, sortedHosts, sortedDates, sortedLocs, and sortedUrls are lists that correspond to the indices in signups
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DetailPage(
+                      title: sortedJeventNames[index],
+                      hostName: sortedHosts[index],
+                      date: sortedDates[index],
+                      location: sortedLocs[index],
+                      imageUrl: sortedUrls[index],
+                    )),
+                  );
+                  // Using GetX for debug mode check
+                  print('ListTile tapped');
+                },
+                child: Container(
+                  height: 125.0,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black, width: 1.0),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 3.0,
+                        color: Colors.grey.withOpacity(0.2),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          sortedJeventNames[index],
+                          style: const TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            const Text(
+                              "Hosted by: ",
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(
+                              sortedHosts[index],
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ],
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                sortedJeventNames[index],
-                                style: const TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
+                        Row(
+                          children: [
+                            const Icon(Icons.calendar_today_outlined, size: 16.0, color: Colors.black),
+                            const SizedBox(width: 5.0),
+                            Text(
+                              sortedDates[index],
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black,
                               ),
-                              Row(
-                                children: [
-                                  const Text(
-                                    "Hosted by: ",
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  Text(
-                                    sortedHosts[index],
-                                    style: const TextStyle(
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  const Icon(Icons.calendar_today_outlined,
-                                      size: 16.0, color: Colors.black),
-                                  const SizedBox(width: 5.0),
-                                  Text(
-                                    sortedDates[index],
-                                    style: const TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  const Icon(Icons.location_on_outlined,
-                                      size: 16.0, color: Colors.black),
-                                  const SizedBox(width: 5.0),
-                                  Text(
-                                    sortedLocs[index],
-                                    style: const TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ),
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on_outlined, size: 16.0, color: Colors.black),
+                            const SizedBox(width: 5.0),
+                            Text(
+                              sortedLocs[index],
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    if (index < signups.length - 1) const Divider(),
-                  ],
-                );
-              },
-            );
-          }
+                  ),
+                ),
+              ),
+              if (index < signups.length - 1) const Divider(),
+            ],
+          );
         },
-      ),
+      );
+    }
+  },
+)
+,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -588,6 +584,8 @@ class SecondRouteState extends State<SecondRoute> {
     return totalJEvents;
   }
 
+ 
+
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
@@ -668,7 +666,6 @@ class SecondRouteState extends State<SecondRoute> {
                                             date: sortedDates[index],
                                             location: sortedLocs[index],
                                             imageUrl: sortedUrls[index],
-                                            time: sortedTimes[index],
                                           )),
                                 );
                                 if (kDebugMode) {
