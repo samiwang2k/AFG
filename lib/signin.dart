@@ -13,8 +13,8 @@ class SignInFormState extends State<SignInForm> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  String email="";
-  String password="";
+  String email = "";
+  String password = "";
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -34,7 +34,7 @@ class SignInFormState extends State<SignInForm> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
                   }
-                  email=value;
+                  email = value;
                   return null;
                 },
               ),
@@ -46,7 +46,7 @@ class SignInFormState extends State<SignInForm> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
                   }
-                  password=value;
+                  password = value;
                   return null;
                 },
                 obscureText: true,
@@ -69,9 +69,11 @@ class SignInFormState extends State<SignInForm> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40.0), // Double padding for longer button
                     ),
-                    onPressed: () {if (_formKey.currentState!.validate()) {
-                  _signIn();
-                };},
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _signIn();
+                      }
+                    },
                     child: const Text('Sign In'),
                   ),
                   const SizedBox(width: 20.0), // Space between buttons

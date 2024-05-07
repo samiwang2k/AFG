@@ -28,7 +28,6 @@ class DetailPage extends StatelessWidget {
   final String location;
   final String hostName;
   final String imageUrl;
-  final String time;
 
   const DetailPage(
       {super.key,
@@ -36,7 +35,7 @@ class DetailPage extends StatelessWidget {
       required this.date,
       required this.location,
       required this.hostName,
-      required this.imageUrl, required this.time});
+      required this.imageUrl});
 
   void _launchURL(String url) async {
     // Remove spaces from the URL string

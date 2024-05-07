@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:afg/create_event.dart';
 import 'package:afg/signin.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +22,6 @@ final List<String> allHosts = [];
 final List<String> allDates = [];
 final List<String> allLocs = [];
 final List<String> allUrls = [];
-final List<String> allTimes = [];
 final List<String> sortedJeventNames = [];
 final List<String> sortedHosts = [];
 final List<String> sortedDates = [];
@@ -102,8 +99,6 @@ Future<void> getAllEventData() async {
 
       allLocs.add('${thingy['location']['x']}, ${thingy['location']['y']}');
       allUrls.add('${thingy['imageUrl']}');
-      allTimes.add(thingy['time']);
-
       getPos();
       final lat1 = lat;
       final lon1 = long;
@@ -126,7 +121,6 @@ Future<void> getAllEventData() async {
       sortedDates.add(allDates[index]);
       sortedLocs.add(allLocs[index]);
       sortedUrls.add(allUrls[index]);
-      sortedTimes.add(allTimes[index]);
     }
   }
 }
@@ -188,46 +182,46 @@ Point? createPoint(String inputted) {
   return null;
 }
 
-// Future<String> createEvent(String textyInput, File imageFile) async {
-//   List<String> jevents = textyInput.split('#');
-//   Jevent jevent = Jevent(
-//     name: jevents[0],
-//     date: jevents[1],
-//     location: createPoint(
-//         jevents[2]), // Assuming createPoint can handle a default value
-//     hostName: jevents.last,
-//   );
+Future<String> createEvent(String textyInput, File imageFile) async {
+  List<String> jevents = textyInput.split('#');
+  Jevent jevent = Jevent(
+    name: jevents[0],
+    date: jevents[1],
+    location: createPoint(
+        jevents[2]), // Assuming createPoint can handle a default value
+    hostName: jevents.last,
+  );
 
-//   // Upload the image to Firebase Storage
-//   final bytes = imageFile.readAsBytesSync();
-//   var timestamp = DateTime.now();
-//   final metadata = SettableMetadata(contentType: 'image/jpeg');
-//   UploadTask task = FirebaseStorage.instance
-//       .ref('EventImages/$timestamp/${imageFile.path.split('/').last}')
-//       .putData(bytes, metadata);
-//   TaskSnapshot downloadUrlSnapshot = await task;
+  // Upload the image to Firebase Storage
+  final bytes = imageFile.readAsBytesSync();
+  var timestamp = DateTime.now();
+  final metadata = SettableMetadata(contentType: 'image/jpeg');
+  UploadTask task = FirebaseStorage.instance
+      .ref('EventImages/$timestamp/${imageFile.path.split('/').last}')
+      .putData(bytes, metadata);
+  TaskSnapshot downloadUrlSnapshot = await task;
 
-//   // Get the download URL of the uploaded image
-//   String imageUrl = await downloadUrlSnapshot.ref.getDownloadURL();
-//   jevent.imageUrl = imageUrl; // Set the image URL in the Jevent object
+  // Get the download URL of the uploaded image
+  String imageUrl = await downloadUrlSnapshot.ref.getDownloadURL();
+  jevent.imageUrl = imageUrl; // Set the image URL in the Jevent object
 
-//   if (kDebugMode) {
-//     print(jevent);
-//   }
+  if (kDebugMode) {
+    print(jevent);
+  }
 
-//   // Save the event details to Firestore
-//   CollectionReference events = FirebaseFirestore.instance.collection('events');
+  // Save the event details to Firestore
+  CollectionReference events = FirebaseFirestore.instance.collection('events');
 
-//   await events.add({
-//     'name': jevent.name,
-//     'date': jevent.date,
-//     'location': jevent.location?.toMap(),
-//     'hostName': jevent.hostName,
-//     'imageUrl': jevent.imageUrl, // Save the image URL
-//   });
+  await events.add({
+    'name': jevent.name,
+    'date': jevent.date,
+    'location': jevent.location?.toMap(),
+    'hostName': jevent.hostName,
+    'imageUrl': jevent.imageUrl, // Save the image URL
+  });
 
-//   return jevent.toString();
-// }
+  return jevent.toString();
+}
 
 Future<void> addPoint(Point point) async {
   Map<String, dynamic> pointMap = point.toMap();
@@ -297,6 +291,7 @@ class FirstRouteState extends State<FirstRoute> {
   @override
   void initState() {
     super.initState();
+    getPos();
     getAllEventData();
     getAllSignups();
   }
@@ -347,11 +342,12 @@ class FirstRouteState extends State<FirstRoute> {
                                     date: sortedDates[index],
                                     location: sortedLocs[index],
                                     imageUrl: sortedUrls[index],
-                                    time: sortedTimes[index],
                                   )),
                         );
                         // Using GetX for debug mode check
-                        print('ListTile tapped');
+                        if (kDebugMode) {
+                          print('ListTile tapped');
+                        }
                       },
                       child: Container(
                         height: 125.0,
@@ -415,6 +411,14 @@ class FirstRouteState extends State<FirstRoute> {
                                 children: [
                                   const Icon(Icons.location_on_outlined,
                                       size: 16.0, color: Colors.black),
+                                  Text(
+                                    sortedTimes[
+                                        index], // Display time from sortedTimes
+                                    style: const TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
                                   const SizedBox(width: 5.0),
                                   Text(
                                     sortedLocs[index],
@@ -668,7 +672,6 @@ class SecondRouteState extends State<SecondRoute> {
                                             date: sortedDates[index],
                                             location: sortedLocs[index],
                                             imageUrl: sortedUrls[index],
-                                            time: sortedTimes[index],
                                           )),
                                 );
                                 if (kDebugMode) {
@@ -886,8 +889,22 @@ class ThirdRouteState extends State<ThirdRoute> {
       body: Column(
         children: [
           ElevatedButton(
-            onPressed: () {},
-            child: const Text("h"),
+            onPressed: () async {
+              await signOut();
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => const SignInForm(),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue, // Use a red color for the button
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+            child: const Text('Sign Out'),
           ),
         ],
       ),
