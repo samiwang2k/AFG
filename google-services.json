@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "533992936885",
+    "project_id": "jevents-afg",
+    "storage_bucket": "jevents-afg.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:533992936885:android:2b1e328ed228975bbf35fc",
+        "android_client_info": {
+          "package_name": "com.example.afg"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "533992936885-3g8dq5rhvjkk24kvvn2a78lnp0ec6qob.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbffRp_QEKJnfMj4zal_mPvj9Hq8_3l_c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "533992936885-3g8dq5rhvjkk24kvvn2a78lnp0ec6qob.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "533992936885-07sr7vclsp6tp5u1b27rgghse50b6rio.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.afg.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -54,6 +54,7 @@ class CreatePageState extends State<CreatePage> {
   String? date;
   String? host;
   String? place;
+  String? time;
 
   String buttonText = "";
   // final _formKey = GlobalKey<FormState>();
@@ -293,6 +294,7 @@ class CreatePageState extends State<CreatePage> {
                           place!), // Assuming createPoint can handle a default value
                       hostName: host,
                       imageUrl: imageUrl,
+                      time: time,
                     );
                     addEvent(newEvent);
                     // Reset form and image selection
@@ -328,7 +330,10 @@ class CreatePageState extends State<CreatePage> {
                       debugPrint(
                           'change $date in time zone ${date.timeZoneOffset.inHours}');
                     }, onConfirm: (date) {
-                      debugPrint('confirm $date');
+                      // Format the DateTime object to extract the hour, minute, and second
+                      time =
+                          '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}:${date.second.toString().padLeft(2, '0')}';
+                      debugPrint('confirm $time');
                     }, currentTime: DateTime.now());
                   },
                   child: const Text(
