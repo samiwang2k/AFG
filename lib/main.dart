@@ -19,11 +19,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:great_circle_distance_calculator/great_circle_distance_calculator.dart';
 
-/// Determine the current position of the device.
-///
-/// When the location services are not enabled or permissions
-/// are denied the `Future` will return an error.
-///
+
 final List<String> allJeventNames = [];
 final List<String> allHosts = [];
 final List<String> allDates = [];
@@ -78,7 +74,62 @@ Future<void> signOut() async {
     }
   }
 }
+double lat = 0;
+  double long = 0;
+  void getPos() async {
+    Position? currentPos = await _determinePosition();
+    
+      lat = currentPos.latitude;
+      long = currentPos.longitude;
+    
+    if (kDebugMode) {
+      print(currentPos.latitude);
+      print(currentPos.longitude);
+    }
+  }
+ Future<void> getAllEventData() async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final QuerySnapshot querySnapshot =
+        await firestore.collection('users').get();
 
+    for (var doc in querySnapshot.docs) {
+      final List<dynamic> jevents = doc['events'];
+
+      for (var thingy in jevents) {
+        allJeventNames.add(thingy['name']);
+        allHosts.add(thingy['hostName']);
+        allDates.add(thingy['date']);
+
+        allLocs.add('${thingy['location']['x']}, ${thingy['location']['y']}');
+        allUrls.add('${thingy['imageUrl']}');
+        getPos();
+        final lat1 = lat;
+        final lon1 = long;
+
+        final lat2 = thingy['location']['x'];
+        final lon2 = thingy['location']['y'];
+
+        var gcd = GreatCircleDistance.fromDegrees(
+            latitude1: lat1,
+            longitude1: lon1,
+            latitude2: lat2,
+            longitude2: lon2);
+        distances.add(gcd.haversineDistance());
+
+        // Use allJeventNames to access the allJeventNames list
+      }
+      List<double> sortedDistances = List.from(distances)..sort();
+
+      for (int i = 0; i < sortedDistances.length; i++) {
+        int index = distances.indexOf(sortedDistances[i]);
+        sortedJeventNames.add(allJeventNames[index]);
+        sortedHosts.add(allHosts[index]);
+        sortedDates.add(allDates[index]);
+        sortedLocs.add(allLocs[index]);
+        sortedUrls.add(allUrls[index]);
+      }
+    }
+  }
 String? userNumber;
 
 Future<String?> signInWithEmailPassword(String email, String password) async {
@@ -244,8 +295,10 @@ class FirstRoute extends StatefulWidget {
 class FirstRouteState extends State<FirstRoute> {
   @override
   void initState() {
-
+    super.initState();
+    getAllEventData();
     getAllSignups();
+    
   }
 
 
@@ -499,8 +552,6 @@ class SecondRouteState extends State<SecondRoute> {
   @override
   void initState() {
     super.initState();
-    getPos();
-
     getAllEventData();
   }
 
@@ -533,48 +584,7 @@ class SecondRouteState extends State<SecondRoute> {
     return totalJEvents;
   }
 
-  Future<void> getAllEventData() async {
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final QuerySnapshot querySnapshot =
-        await firestore.collection('users').get();
-
-    for (var doc in querySnapshot.docs) {
-      final List<dynamic> jevents = doc['events'];
-
-      for (var thingy in jevents) {
-        allJeventNames.add(thingy['name']);
-        allHosts.add(thingy['hostName']);
-        allDates.add(thingy['date']);
-
-        allLocs.add('${thingy['location']['x']}, ${thingy['location']['y']}');
-        allUrls.add('${thingy['imageUrl']}');
-        final lat1 = lat;
-        final lon1 = long;
-
-        final lat2 = thingy['location']['x'];
-        final lon2 = thingy['location']['y'];
-
-        var gcd = GreatCircleDistance.fromDegrees(
-            latitude1: lat1,
-            longitude1: lon1,
-            latitude2: lat2,
-            longitude2: lon2);
-        distances.add(gcd.haversineDistance());
-
-        // Use allJeventNames to access the allJeventNames list
-      }
-      List<double> sortedDistances = List.from(distances)..sort();
-
-      for (int i = 0; i < sortedDistances.length; i++) {
-        int index = distances.indexOf(sortedDistances[i]);
-        sortedJeventNames.add(allJeventNames[index]);
-        sortedHosts.add(allHosts[index]);
-        sortedDates.add(allDates[index]);
-        sortedLocs.add(allLocs[index]);
-        sortedUrls.add(allUrls[index]);
-      }
-    }
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
