@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:afg/create_event.dart';
 import 'package:afg/signin.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +35,22 @@ final List<String> sortedDates = [];
 final List<String> sortedLocs = [];
 final List<String> sortedUrls = [];
 final distances = [];
+final List<int> signups=[];
+Future<List<int>> getAllSignups() async {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final QuerySnapshot querySnapshot =
+        await firestore.collection('users').get();
+
+    for (var doc in querySnapshot.docs) {
+      final List<dynamic> jevents = doc['signups'];
+      for(var stringy in jevents){
+        signups.add(sortedLocs.indexOf(stringy));
+      }
+      
+        
+  }
+  return signups;}
+
 Future<Position> _determinePosition() async {
   LocationPermission permission;
   permission = await Geolocator.requestPermission();
@@ -225,12 +243,144 @@ class FirstRoute extends StatefulWidget {
 
 class FirstRouteState extends State<FirstRoute> {
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+
+    getAllSignups();
+  }
+
+
+  @override
+   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
         automaticallyImplyLeading: false,
       ),
+      body: FutureBuilder<List<int>>(
+  future: getAllSignups(), // This function returns Future<List<int>>
+  builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (snapshot.hasError) {
+      return Center(child: Text('Error: ${snapshot.error}'));
+    } else {
+      final List<int> signups = snapshot.data?? []; // Use snapshot.data directly
+      return ListView.builder(
+        itemCount: signups.length, // Use the length of signups as itemCount
+        itemBuilder: (BuildContext context, int index) {
+          // Check if the index is within the valid range of the lists and present in signups
+          if (index >= allJeventNames.length || 
+              index >= allHosts.length || 
+              index >= allDates.length || 
+              index >= allLocs.length || 
+             !signups.contains(index)) {
+            // Handle the case where the index is out of range or not in signups, e.g., return a default widget
+            return null;
+          }
+
+          // Assuming sortedJeventNames, sortedHosts, sortedDates, sortedLocs, and sortedUrls are lists that correspond to the indices in signups
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DetailPage(
+                      title: sortedJeventNames[index],
+                      hostName: sortedHosts[index],
+                      date: sortedDates[index],
+                      location: sortedLocs[index],
+                      imageUrl: sortedUrls[index],
+                    )),
+                  );
+                  // Using GetX for debug mode check
+                  print('ListTile tapped');
+                },
+                child: Container(
+                  height: 125.0,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black, width: 1.0),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 3.0,
+                        color: Colors.grey.withOpacity(0.2),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          sortedJeventNames[index],
+                          style: const TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            const Text(
+                              "Hosted by: ",
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(
+                              sortedHosts[index],
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Icon(Icons.calendar_today_outlined, size: 16.0, color: Colors.black),
+                            const SizedBox(width: 5.0),
+                            Text(
+                              sortedDates[index],
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on_outlined, size: 16.0, color: Colors.black),
+                            const SizedBox(width: 5.0),
+                            Text(
+                              sortedLocs[index],
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              if (index < signups.length - 1) const Divider(),
+            ],
+          );
+        },
+      );
+    }
+  },
+)
+,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
