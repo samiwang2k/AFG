@@ -217,7 +217,7 @@ Future<String> createEvent(String textyInput, File imageFile) async {
     'date': jevent.date,
     'location': jevent.location?.toMap(),
     'hostName': jevent.hostName,
-    'imageUrl': jevent.imageUrl, // Save the image URL
+    'imageUrl': jevent.imageUrl, 'time':jevent.time,// Save the image URL
   });
 
   return jevent.toString();
