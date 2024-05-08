@@ -22,19 +22,21 @@ final List<String> allHosts = [];
 final List<String> allDates = [];
 final List<String> allLocs = [];
 final List<String> allUrls = [];
-final List<String> allTimes=[];
+final List<String> allTimes = [];
+final List<String> allAddress = [];
 final List<String> sortedJeventNames = [];
 final List<String> sortedHosts = [];
 final List<String> sortedDates = [];
 final List<String> sortedLocs = [];
 final List<String> sortedUrls = [];
 final List<String> sortedTimes = [];
+final List<String> sortedAddress = [];
 final distances = [];
 final List<int> signups = [];
 Future<List<int>> getAllSignups() async {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final QuerySnapshot querySnapshot = await firestore.collection('users').get();
-
+  signups.clear();
   for (var doc in querySnapshot.docs) {
     final List<dynamic> jevents = doc['signups'];
     for (var stringy in jevents) {
@@ -89,12 +91,13 @@ void getPos() async {
 Future<void> getAllEventData() async {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final QuerySnapshot querySnapshot = await firestore.collection('users').get();
-    allJeventNames.clear();
+  allJeventNames.clear();
   allHosts.clear();
   allDates.clear();
   allLocs.clear();
   allUrls.clear();
   allTimes.clear();
+  allAddress.clear();
   distances.clear();
   sortedJeventNames.clear();
   sortedHosts.clear();
@@ -102,6 +105,7 @@ Future<void> getAllEventData() async {
   sortedLocs.clear();
   sortedUrls.clear();
   sortedTimes.clear();
+  sortedAddress.clear();
 
   for (var doc in querySnapshot.docs) {
     final List<dynamic> jevents = doc['events'];
@@ -114,7 +118,8 @@ Future<void> getAllEventData() async {
       allLocs.add('${thingy['location']['x']}, ${thingy['location']['y']}');
       allUrls.add('${thingy['imageUrl']}');
       allTimes.add(thingy['time']);
-      
+      allAddress.add(thingy['address']);
+
       getPos();
       final lat1 = lat;
       final lon1 = long;
@@ -138,6 +143,7 @@ Future<void> getAllEventData() async {
       sortedLocs.add(allLocs[index]);
       sortedUrls.add(allUrls[index]);
       sortedTimes.add(allTimes[index]);
+      sortedAddress.add(allAddress[index]);
     }
   }
 }
@@ -200,46 +206,46 @@ Point? createPoint(String inputted) {
   return null;
 }
 
-Future<String> createEvent(String textyInput, File imageFile) async {
-  List<String> jevents = textyInput.split('#');
-  Jevent jevent = Jevent(
-    name: jevents[0],
-    date: jevents[1],
-    location: createPoint(
-        jevents[2]), // Assuming createPoint can handle a default value
-    hostName: jevents.last,
-  );
+// Future<String> createEvent(String textyInput, File imageFile) async {
+//   List<String> jevents = textyInput.split('#');
+//   Jevent jevent = Jevent(
+//     name: jevents[0],
+//     date: jevents[1],
+//     location: createPoint(
+//         jevents[2]), // Assuming createPoint can handle a default value
+//     hostName: jevents.last,
+//   );
 
-  // Upload the image to Firebase Storage
-  final bytes = imageFile.readAsBytesSync();
-  var timestamp = DateTime.now();
-  final metadata = SettableMetadata(contentType: 'image/jpeg');
-  UploadTask task = FirebaseStorage.instance
-      .ref('EventImages/$timestamp/${imageFile.path.split('/').last}')
-      .putData(bytes, metadata);
-  TaskSnapshot downloadUrlSnapshot = await task;
+//   // Upload the image to Firebase Storage
+//   final bytes = imageFile.readAsBytesSync();
+//   var timestamp = DateTime.now();
+//   final metadata = SettableMetadata(contentType: 'image/jpeg');
+//   UploadTask task = FirebaseStorage.instance
+//       .ref('EventImages/$timestamp/${imageFile.path.split('/').last}')
+//       .putData(bytes, metadata);
+//   TaskSnapshot downloadUrlSnapshot = await task;
 
-  // Get the download URL of the uploaded image
-  String imageUrl = await downloadUrlSnapshot.ref.getDownloadURL();
-  jevent.imageUrl = imageUrl; // Set the image URL in the Jevent object
+//   // Get the download URL of the uploaded image
+//   String imageUrl = await downloadUrlSnapshot.ref.getDownloadURL();
+//   jevent.imageUrl = imageUrl; // Set the image URL in the Jevent object
 
-  if (kDebugMode) {
-    print(jevent);
-  }
+//   if (kDebugMode) {
+//     print(jevent);
+//   }
 
-  // Save the event details to Firestore
-  CollectionReference events = FirebaseFirestore.instance.collection('events');
+//   // Save the event details to Firestore
+//   CollectionReference events = FirebaseFirestore.instance.collection('events');
 
-  await events.add({
-    'name': jevent.name,
-    'date': jevent.date,
-    'location': jevent.location?.toMap(),
-    'hostName': jevent.hostName,
-    'imageUrl': jevent.imageUrl, 'time':jevent.time,// Save the image URL
-  });
+//   await events.add({
+//     'name': jevent.name,
+//     'date': jevent.date,
+//     'location': jevent.location?.toMap(),
+//     'hostName': jevent.hostName,
+//     'imageUrl': jevent.imageUrl, 'time': jevent.time, // Save the image URL
+//   });
 
-  return jevent.toString();
-}
+//   return jevent.toString();
+// }
 
 Future<void> addPoint(Point point) async {
   Map<String, dynamic> pointMap = point.toMap();
@@ -308,11 +314,10 @@ class FirstRoute extends StatefulWidget {
 class FirstRouteState extends State<FirstRoute> {
   @override
   void initState() {
-        getPos();
+    getPos();
     getAllEventData();
     getAllSignups();
     super.initState();
-
   }
 
   @override
@@ -355,12 +360,13 @@ class FirstRouteState extends State<FirstRoute> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => DetailPage(
-                                    title: sortedJeventNames[index],
-                                    hostName: sortedHosts[index],
-                                    date: sortedDates[index],
-                                    location: sortedLocs[index],
-                                    imageUrl: sortedUrls[index], time: sortedTimes[index],
-                                  )),
+                                  title: sortedJeventNames[index],
+                                  hostName: sortedHosts[index],
+                                  date: sortedDates[index],
+                                  location: sortedLocs[index],
+                                  imageUrl: sortedUrls[index],
+                                  time: sortedTimes[index],
+                                  address: sortedAddress[index])),
                         );
                         // Using GetX for debug mode check
                         if (kDebugMode) {
@@ -535,45 +541,45 @@ class SecondRoute extends StatefulWidget {
 }
 
 class SecondRouteState extends State<SecondRoute> {
-  final _formKey = GlobalKey<FormState>(); // GlobalKey for form validation
+  //final _formKey = GlobalKey<FormState>(); // GlobalKey for form validation
   String name = '';
   String buttonText = ''; // Assuming variable holds selected date
   String place = '';
   String host = '';
-  File? _pickedImage;
+  //File? _pickedImage;
 
-  Future<void> createEvent(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {
-      // Check if an image is selected
-      if (_pickedImage != null) {
-        // Implement image upload logic (replace placeholder)
-        String imageUrl = await uploadImage(
-            _pickedImage!); // Replace with your upload function
-        // Create the Jevent object
-        final newEvent = Jevent(
-          name: name,
-          date: buttonText,
-          location: createPoint(
-              place), // Assuming createPoint can handle a default value
-          hostName: host,
-          imageUrl: imageUrl,
-        );
-        addEvent(newEvent); // Replace with your function to store the event
-        // Reset form and image selection
-        _formKey.currentState!.reset();
-        setState(() {
-          _pickedImage = null;
-        });
-      } else {
-        // Show error message if no image selected
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select an image for the event'),
-          ),
-        );
-      }
-    }
-  }
+  // Future<void> createEvent(BuildContext context) async {
+  //   if (_formKey.currentState!.validate()) {
+  //     // Check if an image is selected
+  //     if (_pickedImage != null) {
+  //       // Implement image upload logic (replace placeholder)
+  //       String imageUrl = await uploadImage(
+  //           _pickedImage!); // Replace with your upload function
+  //       // Create the Jevent object
+  //       final newEvent = Jevent(
+  //         name: name,
+  //         date: buttonText,
+  //         location: createPoint(
+  //             place), // Assuming createPoint can handle a default value
+  //         hostName: host,
+  //         imageUrl: imageUrl,
+  //       );
+  //       addEvent(newEvent); // Replace with your function to store the event
+  //       // Reset form and image selection
+  //       _formKey.currentState!.reset();
+  //       setState(() {
+  //         _pickedImage = null;
+  //       });
+  //     } else {
+  //       // Show error message if no image selected
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text('Please select an image for the event'),
+  //         ),
+  //       );
+  //     }
+  //   }
+  // }
 
   @override
   void initState() {
@@ -638,7 +644,6 @@ class SecondRouteState extends State<SecondRoute> {
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else {
-                    
                     return ListView.builder(
                       itemCount: sortedJeventNames.length,
                       itemBuilder: (BuildContext context, int index) {
@@ -685,12 +690,13 @@ class SecondRouteState extends State<SecondRoute> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => DetailPage(
-                                            title: sortedJeventNames[index],
-                                            hostName: sortedHosts[index],
-                                            date: sortedDates[index],
-                                            location: sortedLocs[index],
-                                            imageUrl: sortedUrls[index], time: sortedTimes[index],
-                                          )),
+                                          title: sortedJeventNames[index],
+                                          hostName: sortedHosts[index],
+                                          date: sortedDates[index],
+                                          location: sortedLocs[index],
+                                          imageUrl: sortedUrls[index],
+                                          time: sortedTimes[index],
+                                          address: sortedAddress[index])),
                                 );
                                 if (kDebugMode) {
                                   print('ListTile tapped');
@@ -793,7 +799,8 @@ class SecondRouteState extends State<SecondRoute> {
                                 ),
                               ),
                             ),
-                            if (index < sortedJeventNames.length - 1) const Divider(),
+                            if (index < sortedJeventNames.length - 1)
+                              const Divider(),
                           ],
                         );
                       },

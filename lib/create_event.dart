@@ -13,7 +13,6 @@ import 'jevent.dart';
 import 'main.dart';
 import 'point.dart';
 
-
 class CreatePage extends StatefulWidget {
   const CreatePage({super.key});
 
@@ -56,6 +55,7 @@ class CreatePageState extends State<CreatePage> {
   String? host;
   String? place;
   String? time;
+  String? userAddress;
 
   String buttonText = "";
   // final _formKey = GlobalKey<FormState>();
@@ -195,8 +195,10 @@ class CreatePageState extends State<CreatePage> {
                                 }
                                 if (kDebugMode) {
                                   print(pickedData.addressName);
+                                  print(pickedData.address);
                                 }
-
+                                userAddress =
+                                    '${pickedData.address['road']}, ${pickedData.address['city']}, ${pickedData.address['state']}, ${pickedData.address['postcode']}';
                                 place =
                                     '${pickedData.latLong.latitude},${pickedData.latLong.longitude}';
                                 Navigator.pop(context);
@@ -209,7 +211,7 @@ class CreatePageState extends State<CreatePage> {
                                   style: TextStyle(color: Colors.black),
                                 ),
                                 onPressed: () {
-                                  Navigator.of(context).pop();
+                                  Navigator.pop(context);
                                 },
                               ),
                             ],
@@ -295,9 +297,13 @@ class CreatePageState extends State<CreatePage> {
                           place!), // Assuming createPoint can handle a default value
                       hostName: host,
                       imageUrl: imageUrl,
-                      time: time,
+                      time: time, address: userAddress,
                     );
+                    
+                    print(newEvent);
+                    print(userAddress);
                     addEvent(newEvent);
+
                     // Reset form and image selection
 
                     setState(() {

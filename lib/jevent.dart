@@ -10,6 +10,7 @@ class Jevent {
   String? _hostName;
   String? _imageUrl; // New image property
   String? _time;
+  String? _address;
 
   // Updated constructor to include imageUrl parameter
   Jevent(
@@ -18,17 +19,22 @@ class Jevent {
       Point? location,
       String? hostName,
       String? imageUrl,
-      String? time}) {
+      String? time,
+      String? address}) {
     this.name = name;
     this.date = date;
     this.location = location;
     this.hostName = hostName;
     this.imageUrl = imageUrl; // Set the image URL
     this.time = time;
+    this.address = address;
   }
 
   // Getter for name
   String? get name => _name;
+  String? get address => _address;
+
+  set address(String? value) {_address = value;}
 
   set time(String? value) {
     _time = value;
@@ -86,6 +92,7 @@ class Jevent {
       'hostName': hostName,
       'imageUrl': imageUrl,
       'time': time,
+      'address': address
     };
   }
 }
