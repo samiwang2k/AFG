@@ -22,6 +22,7 @@ final List<String> allHosts = [];
 final List<String> allDates = [];
 final List<String> allLocs = [];
 final List<String> allUrls = [];
+final List<String> allTimes=[];
 final List<String> sortedJeventNames = [];
 final List<String> sortedHosts = [];
 final List<String> sortedDates = [];
@@ -88,6 +89,19 @@ void getPos() async {
 Future<void> getAllEventData() async {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final QuerySnapshot querySnapshot = await firestore.collection('users').get();
+    allJeventNames.clear();
+  allHosts.clear();
+  allDates.clear();
+  allLocs.clear();
+  allUrls.clear();
+  allTimes.clear();
+  distances.clear();
+  sortedJeventNames.clear();
+  sortedHosts.clear();
+  sortedDates.clear();
+  sortedLocs.clear();
+  sortedUrls.clear();
+  sortedTimes.clear();
 
   for (var doc in querySnapshot.docs) {
     final List<dynamic> jevents = doc['events'];
@@ -99,6 +113,8 @@ Future<void> getAllEventData() async {
 
       allLocs.add('${thingy['location']['x']}, ${thingy['location']['y']}');
       allUrls.add('${thingy['imageUrl']}');
+      allTimes.add(thingy['time']);
+      
       getPos();
       final lat1 = lat;
       final lon1 = long;
@@ -121,6 +137,7 @@ Future<void> getAllEventData() async {
       sortedDates.add(allDates[index]);
       sortedLocs.add(allLocs[index]);
       sortedUrls.add(allUrls[index]);
+      sortedTimes.add(allTimes[index]);
     }
   }
 }
@@ -158,6 +175,7 @@ Future<void> main() async {
   final user = FirebaseAuth.instance.currentUser;
   if (user != null) {
     // User is already signed in, navigate to the main content
+
     runApp(const MaterialApp(
       title: 'AFG',
       home: FirstRoute(),
@@ -290,10 +308,11 @@ class FirstRoute extends StatefulWidget {
 class FirstRouteState extends State<FirstRoute> {
   @override
   void initState() {
-    super.initState();
-    getPos();
+        getPos();
     getAllEventData();
     getAllSignups();
+    super.initState();
+
   }
 
   @override
@@ -311,8 +330,7 @@ class FirstRouteState extends State<FirstRoute> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            final List<int> signups =
-                snapshot.data ?? []; // Use snapshot.data directly
+            // Use snapshot.data directly
             return ListView.builder(
               itemCount:
                   signups.length, // Use the length of signups as itemCount
@@ -341,7 +359,7 @@ class FirstRouteState extends State<FirstRoute> {
                                     hostName: sortedHosts[index],
                                     date: sortedDates[index],
                                     location: sortedLocs[index],
-                                    imageUrl: sortedUrls[index],
+                                    imageUrl: sortedUrls[index], time: sortedTimes[index],
                                   )),
                         );
                         // Using GetX for debug mode check
@@ -560,22 +578,22 @@ class SecondRouteState extends State<SecondRoute> {
   @override
   void initState() {
     super.initState();
-    getAllEventData();
+    // getAllEventData();
   }
 
-  double lat = 0;
-  double long = 0;
-  void getPos() async {
-    Position? currentPos = await _determinePosition();
-    setState(() {
-      lat = currentPos.latitude;
-      long = currentPos.longitude;
-    });
-    if (kDebugMode) {
-      print(currentPos.latitude);
-      print(currentPos.longitude);
-    }
-  }
+  // double lat = 0;
+  // double long = 0;
+  // void getPos() async {
+  //   Position? currentPos = await _determinePosition();
+  //   setState(() {
+  //     lat = currentPos.latitude;
+  //     long = currentPos.longitude;
+  //   });
+  //   if (kDebugMode) {
+  //     print(currentPos.latitude);
+  //     print(currentPos.longitude);
+  //   }
+  // }
 
   Future<int> getTotalEvents() async {
     int totalJEvents = 0;
@@ -620,9 +638,9 @@ class SecondRouteState extends State<SecondRoute> {
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else {
-                    final int totalJEvents = snapshot.data!;
+                    
                     return ListView.builder(
-                      itemCount: totalJEvents,
+                      itemCount: sortedJeventNames.length,
                       itemBuilder: (BuildContext context, int index) {
                         // Check if the index is within the valid range of the lists
                         if (index >= allJeventNames.length ||
@@ -671,7 +689,7 @@ class SecondRouteState extends State<SecondRoute> {
                                             hostName: sortedHosts[index],
                                             date: sortedDates[index],
                                             location: sortedLocs[index],
-                                            imageUrl: sortedUrls[index],
+                                            imageUrl: sortedUrls[index], time: sortedTimes[index],
                                           )),
                                 );
                                 if (kDebugMode) {
@@ -775,7 +793,7 @@ class SecondRouteState extends State<SecondRoute> {
                                 ),
                               ),
                             ),
-                            if (index < totalJEvents - 1) const Divider(),
+                            if (index < sortedJeventNames.length - 1) const Divider(),
                           ],
                         );
                       },
