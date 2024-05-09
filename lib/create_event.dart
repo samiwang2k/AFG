@@ -198,7 +198,7 @@ class CreatePageState extends State<CreatePage> {
                                   print(pickedData.address);
                                 }
                                 userAddress =
-                                    '${pickedData.address['road']}, ${pickedData.address['city']}, ${pickedData.address['state']}, ${pickedData.address['postcode']}';
+                                    '${pickedData.address['road']}, ${pickedData.address['state']}, ${pickedData.address['postcode']}';
                                 place =
                                     '${pickedData.latLong.latitude},${pickedData.latLong.longitude}';
                                 Navigator.pop(context);
@@ -317,6 +317,11 @@ class CreatePageState extends State<CreatePage> {
                       ),
                     );
                   }
+                  Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SecondRoute()),
+                        );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
