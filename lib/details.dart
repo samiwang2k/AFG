@@ -1,5 +1,6 @@
 import 'package:afg/add_signup.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as images;
 import 'package:url_launcher/url_launcher.dart';
@@ -90,53 +91,69 @@ class DetailPage extends StatelessWidget {
                     fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(location),
+            Card(
+  child: Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            text: 'Address: ',
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold, // Bold for heading
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Host: $hostName'),
-              ],
-            ),
-            const Text('Date:'),
-            Text(date),
-            GestureDetector(
-              onTap: () {
-                _launchURL(
-                    'https://www.google.com/maps/search/?api=1&query=${location.split(',')[0]}+${location.split(',')[1]}');
-                // Replace with your desired URL
+            children: [
+              TextSpan(
+                text: address,
+                style: const TextStyle(
+                  fontSize: 14.0,
+                ),
+                recognizer: TapGestureRecognizer()..onTap = () {
+                  // Launch maps with address
+                },
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8.0), // Add spacing between elements
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Align left and right
+          children: [
+            Text('Host: $hostName', style: const TextStyle(fontSize: 14.0)),
+            Text('Time: $time', style: const TextStyle(fontSize: 14.0)),
+            Text('Date: $date', style: const TextStyle(fontSize: 14.0)),
+          ],
+        ),
+        const SizedBox(height: 8.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                // Launch maps with address (similar to RichText)
               },
-              child: Container(
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: const Text(
-                  'Visit address',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.0,
-                  ),
-                ),
+              child: const Text('Visit address'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.blue, // Set desired text color
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => const RSVPPage()),
-                // );
-                addSignup(location);
-              },
+              onPressed: () => addSignup(location),
               child: const Text('RSVP'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.blue, // Set desired text color
+              ),
             ),
           ],
         ),
+      ],
       ),
-    );
+    ),
+            ),
+          ])));
   }
 
   Future<double> getImageAspectRatio(String imageUrl) async {
