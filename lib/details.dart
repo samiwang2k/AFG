@@ -59,101 +59,109 @@ class DetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Event Details'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final maxWidth = constraints.maxWidth;
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Image.network(
-                    imageUrl,
-                    width: maxWidth * 0.75, // Set width to 75% of screen width
-                    height: maxWidth * 0.75, // Set height to match width
-                    fit: BoxFit.cover, // Maintain aspect ratio within container
-                  ),
-                );
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                title,
-                style: const TextStyle(
-                    fontSize: 24.0, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Card(
-  child: Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        RichText(
-          text: TextSpan(
-            text: 'Address: ',
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold, // Bold for heading
-            ),
-            children: [
-              TextSpan(
-                text: address,
-                style: const TextStyle(
-                  fontSize: 14.0,
-                ),
-                recognizer: TapGestureRecognizer()..onTap = () {
-                  // Launch maps with address
-                },
-              ),
-            ],
+        appBar: AppBar(
+          title: const Text('Event Details'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-        const SizedBox(height: 8.0), // Add spacing between elements
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Align left and right
-          children: [
-            Text('Host: $hostName', style: const TextStyle(fontSize: 14.0)),
-            Text('Time: $time', style: const TextStyle(fontSize: 14.0)),
-            Text('Date: $date', style: const TextStyle(fontSize: 14.0)),
-          ],
-        ),
-        const SizedBox(height: 8.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                // Launch maps with address (similar to RichText)
-              },
-              child: const Text('Visit address'),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.blue, // Set desired text color
+        body: SingleChildScrollView(
+            child: Column(children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final maxWidth = constraints.maxWidth;
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.network(
+                  imageUrl,
+                  width: maxWidth * 0.75, // Set width to 75% of screen width
+                  height: maxWidth * 0.75, // Set height to match width
+                  fit: BoxFit.cover, // Maintain aspect ratio within container
+                ),
+              );
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              title,
+              style:
+                  const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      text: 'Address: ',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold, // Bold for heading
+                      ),
+                      children: [
+                        TextSpan(
+                          text: address,
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // Launch maps with address
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8.0), // Add spacing between elements
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween, // Align left and right
+                    children: [
+                      Text('Host: $hostName',
+                          style: const TextStyle(fontSize: 14.0)),
+                      Text('Time: $time',
+                          style: const TextStyle(fontSize: 14.0)),
+                      Text('Date: $date',
+                          style: const TextStyle(fontSize: 14.0)),
+                    ],
+                  ),
+                  const SizedBox(height: 8.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          // Launch maps with address (similar to RichText)
+                        },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor:
+                              Colors.blue, // Set desired text color
+                        ),
+                        child: const Text('Visit address'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => addSignup(location),
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor:
+                              Colors.blue, // Set desired text color
+                        ),
+                        child: const Text('RSVP'),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            ElevatedButton(
-              onPressed: () => addSignup(location),
-              child: const Text('RSVP'),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.blue, // Set desired text color
-              ),
-            ),
-          ],
-        ),
-      ],
-      ),
-    ),
-            ),
-          ])));
+          ),
+        ])));
   }
 
   Future<double> getImageAspectRatio(String imageUrl) async {

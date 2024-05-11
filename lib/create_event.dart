@@ -299,10 +299,11 @@ class CreatePageState extends State<CreatePage> {
                       imageUrl: imageUrl,
                       time: time, address: userAddress,
                     );
-                    
-                    print(newEvent);
-                    print(userAddress);
-                    addEvent(newEvent);
+                    if (kDebugMode) {
+                      print(newEvent);
+                      print(userAddress);
+                      addEvent(newEvent);
+                    }
 
                     // Reset form and image selection
 
@@ -318,10 +319,11 @@ class CreatePageState extends State<CreatePage> {
                     );
                   }
                   Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SecondRoute()),
-                        );
+                    // ignore: use_build_context_synchronously
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SecondRoute()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor:

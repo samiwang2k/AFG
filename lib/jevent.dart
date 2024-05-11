@@ -34,7 +34,9 @@ class Jevent {
   String? get name => _name;
   String? get address => _address;
 
-  set address(String? value) {_address = value;}
+  set address(String? value) {
+    _address = value;
+  }
 
   set time(String? value) {
     _time = value;

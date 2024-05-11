@@ -324,21 +324,19 @@ class FirstRouteState extends State<FirstRoute> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-  title: Padding(
-    padding: const EdgeInsets.only(bottom: 8.0),
-    child: Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-
-    children: [
-      const Text('Your Events'),
-      Text('You have signed up for events'), // Use string interpolation
-    ],
-  ),
-  ),
-  automaticallyImplyLeading: false,
-),
-
+        title: const Padding(
+          padding: EdgeInsets.only(bottom: 8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('Your Events'),
+              Text('You have signed up for events'), // Use string interpolation
+            ],
+          ),
+        ),
+        automaticallyImplyLeading: false,
+      ),
       body: FutureBuilder<List<int>>(
         future: getAllSignups(), // This function returns Future<List<int>>
         builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
@@ -444,51 +442,50 @@ class FirstRouteState extends State<FirstRoute> {
                                 ],
                               ),
                               Row(
-  children: [
-    const Icon(Icons.location_on_outlined, size: 16.0, color: Colors.black),
-    const SizedBox(width: 5.0),
-    Flexible(
-      child: Text(
-        sortedTimes[index],
-        style: const TextStyle(
-          fontSize: 14.0,
-          color: Colors.black,
-        ),
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
-      ),
-    ),
-    const Flexible(
-    child: Text(
-        " ",
-        style: TextStyle(
-          fontSize: 14.0,
-          color: Colors.black,
-        ),
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
-      ),
-    ),
-    Flexible(
-      child: Text(
-        sortedAddress[index],
-        style: const TextStyle(
-          fontSize: 14.0,
-          color: Colors.black,
-        ),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
-      ),
-  ],
-    ),
+                                children: [
+                                  const Icon(Icons.location_on_outlined,
+                                      size: 16.0, color: Colors.black),
+                                  const SizedBox(width: 5.0),
+                                  Flexible(
+                                    child: Text(
+                                      sortedTimes[index],
+                                      style: const TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.black,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                  const Flexible(
+                                    child: Text(
+                                      " ",
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.black,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: Text(
+                                      sortedAddress[index],
+                                      style: const TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.black,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                            
                         ),
                       ),
                     ),
-                    
                     if (index < signups.length - 1) const Divider(),
                   ],
                 );
@@ -684,10 +681,9 @@ class SecondRouteState extends State<SecondRoute> {
                             index >= allDates.length ||
                             index >= allLocs.length) {
                           // Handle the case where the index is out of range, e.g., return a default widget
-                          
+
                           ListTile(
                             shape: RoundedRectangleBorder(
-                                
                                 side: const BorderSide(
                                     color: Colors.black, width: 1),
                                 borderRadius: BorderRadius.circular(5)),
@@ -712,7 +708,6 @@ class SecondRouteState extends State<SecondRoute> {
                               ),
                             ),
                           );
-                          
                         }
 
                         return Column(
@@ -812,44 +807,45 @@ class SecondRouteState extends State<SecondRoute> {
                                       ),
                                       // Location on a separate line
                                       Row(
-  children: [
-    const Icon(Icons.location_on_outlined, size: 16.0, color: Colors.black),
-    const SizedBox(width: 5.0),
-    Flexible(
-      child: Text(
-        sortedTimes[index],
-        style: const TextStyle(
-          fontSize: 14.0,
-          color: Colors.black,
-        ),
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
-      ),
-    ),
-    const Flexible(
-    child: Text(
-        " ",
-        style: TextStyle(
-          fontSize: 14.0,
-          color: Colors.black,
-        ),
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
-      ),
-    ),
-    Flexible(
-      child: Text(
-        sortedAddress[index],
-        style: const TextStyle(
-          fontSize: 14.0,
-          color: Colors.black,
-        ),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
-      ),
-  ],
-    ),
+                                        children: [
+                                          const Icon(Icons.location_on_outlined,
+                                              size: 16.0, color: Colors.black),
+                                          const SizedBox(width: 5.0),
+                                          Flexible(
+                                            child: Text(
+                                              sortedTimes[index],
+                                              style: const TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.black,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
+                                          ),
+                                          const Flexible(
+                                            child: Text(
+                                              " ",
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.black,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: Text(
+                                              sortedAddress[index],
+                                              style: const TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.black,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -965,33 +961,36 @@ class ThirdRoute extends StatefulWidget {
 
 class ThirdRouteState extends State<ThirdRoute> {
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(  // Add AppBar
-      leading: IconButton(  // Place IconButton inside AppBar's leading property
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () => Navigator.of(context).pop(),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        // Add AppBar
+        leading: IconButton(
+          // Place IconButton inside AppBar's leading property
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
-    ),
-    body: Center(
-      child: ElevatedButton(
-        onPressed: () async {
-          await signOut();
-          // ignore: use_build_context_synchronously
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const SignInForm(),
-            ),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.blue, // Set desired text color
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () async {
+            await signOut();
+            // ignore: use_build_context_synchronously
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const SignInForm(),
               ),
-        child: const Text('Sign Out'),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.blue, // Set desired text color
+          ),
+          child: const Text('Sign Out'),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
 
 Future<String?> signUpWithEmailPassword(String email, String password) async {
