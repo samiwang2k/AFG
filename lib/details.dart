@@ -42,6 +42,7 @@ class DetailPage extends StatelessWidget {
       required this.time,
       required this.address});
 
+  // ignore: unused_element
   void _launchURL(String url) async {
     // Remove spaces from the URL string
     String urlWithoutSpaces = url.replaceAll(' ', '');
