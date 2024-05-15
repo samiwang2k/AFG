@@ -113,7 +113,8 @@ class DetailPage extends StatelessWidget {
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              // Launch maps with address
+                              _launchURL(
+                                  'https://www.google.com/maps/search/?api=1&query=${location.split(',')[0]}+${location.split(',')[1]}');
                             },
                         ),
                       ],
