@@ -111,11 +111,7 @@ class DetailPage extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 14.0,
                           ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              _launchURL(
-                                  'https://www.google.com/maps/search/?api=1&query=${location.split(',')[0]}+${location.split(',')[1]}');
-                            },
+                          recognizer: TapGestureRecognizer()..onTap = () {},
                         ),
                       ],
                     ),
@@ -139,7 +135,8 @@ class DetailPage extends StatelessWidget {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          // Launch maps with address (similar to RichText)
+                          _launchURL(
+                              'https://www.google.com/maps/search/?api=1&query=${location.split(',')[0]}+${location.split(',')[1]}');
                         },
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
